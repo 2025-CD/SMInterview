@@ -17,6 +17,7 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/thisisjava?serverTimezone=Asia/Seoul
     username: root
     password: 1234
+
 mybatis:
   type-aliases-package: com.example.web01.app.dto
   mapper-locations: classpath:/mapper/*.xml
