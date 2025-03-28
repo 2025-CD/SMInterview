@@ -32,6 +32,7 @@
                 <li class="nav-item"><a class="nav-link" href="#portfolio">Portfolio</a></li>
                 <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
                 <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+                <li class="nav-item"><a class="nav-link" href="/interview">interview</a></li>
             </ul>
         </div>
     </div>
@@ -51,7 +52,7 @@
 
 
             <div class="col-lg-8 align-self-end">
-                <h1 class="text-white font-weight-bold">"Shine your potential. Prepare for interviews with AI."</h1>
+                <h1 class="text-white font-weight-bold">"Shine your potential. sexPrepare for interviews with AI."</h1>
                 <hr class="divider" />
             </div>
             <div class="col-lg-8 align-self-baseline">
