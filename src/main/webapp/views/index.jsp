@@ -55,7 +55,7 @@
             </div>
             <div class="col-lg-8 align-self-baseline">
                 <p class="text-white-75 mb-5"> "A chance to prove yourself—let us help you prepare."</p>
-                <a class="btn btn-primary btn-xl" href="#about">"Worried about interviews? AI is here to help."</a>
+                <a class="btn btn-primary btn-xl" href="#about">"Worried about interviews? AI is here to help"</a>
             </div>
         </div>
     </div>
