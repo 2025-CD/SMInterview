@@ -57,7 +57,7 @@
             </div>
             <div class="col-lg-8 align-self-baseline">
                 <p class="text-white-75 mb-5"> "스스로를 증명할 기회, 준비는 우리가 도와줄게요."</p>
-                <a class="btn btn-primary btn-xl" href="#about"> 면접 준비"</a>
+                <a class="btn btn-primary btn-xl" href="#about"> 면접 준비</a>
             </div>
         </div>
     </div>
