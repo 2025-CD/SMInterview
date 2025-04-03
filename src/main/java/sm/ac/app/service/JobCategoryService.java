@@ -50,6 +50,11 @@ public class JobCategoryService implements InterviewService<String, JobCategoryD
         return jobCategoryRepository.select();
     }
 
+    // 특정 직종 ID에 따른 직군 리스트 반환
+    public List<JobCategoryDto> getJobCategories(int fieldId) {
+        return jobCategoryRepository.getJobCategoriesByFieldId(fieldId);
+    }
+
 //    public List<CustDto> findByName(String name) throws Exception {
 //        return usersRepository.findByName(name);
 //    }
@@ -61,6 +66,13 @@ public class JobCategoryService implements InterviewService<String, JobCategoryD
 //
 //    public boolean hasPurchasedPT(String custId) {
 //        return usersRepository.hasPurchasedPT(custId) > 0;
+//    }
+
+//    public List<JobCategoryDto> getJobCategoriesByField(Long jobFieldId) {
+//        return jobCategoryRepository.findByJobFieldId(jobFieldId)
+//                .stream()
+//                .map(jobCategory -> new JobCategoryDto(jobCategory.getId(), jobCategory.getName()))
+//                .collect(Collectors.toList());
 //    }
 
 

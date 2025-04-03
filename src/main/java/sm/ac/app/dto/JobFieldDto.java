@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class JobFieldDto {
-    private int id;
+    private int fieldid;
     private String fieldName;
 }

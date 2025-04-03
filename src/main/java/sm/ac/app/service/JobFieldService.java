@@ -62,6 +62,10 @@ public class JobFieldService implements InterviewService<String, JobFieldDto> {
 //        return usersRepository.hasPurchasedPT(custId) > 0;
 //    }
 
+    public List<JobFieldDto> getJobFields() {
+        return jobFieldRepository.getJobFields();
+    }
+
 
 
 }

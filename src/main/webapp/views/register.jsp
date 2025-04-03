@@ -1,6 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,33 +10,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         function updateJobCategories() {
-            const jobField = document.getElementById("jobField").value;
+            console.log("updateJobCategories 함수 실행됨!");
+            const jobFieldId = document.getElementById("jobField").value;
+            console.log("선택된 jobFieldId:", jobFieldId);
+
             const jobCategoryDiv = document.getElementById("jobCategoryDiv");
             const jobCategorySelect = document.getElementById("jobCategory");
 
-            const jobCategories = {
-                "IT": ["백엔드", "프론트엔드", "클라우드", "데이터 엔지니어"],
-                "금융": ["애널리스트", "투자은행", "회계사", "재무 관리자"],
-                "제조": ["생산관리", "품질관리", "기계설계", "자동화 엔지니어"]
-            };
-
-            // 기존 옵션 제거
+            // 기존 옵션 초기화
             jobCategorySelect.innerHTML = '<option value="">선택</option>';
 
-            // 선택한 직군에 따라 옵션 추가
-            if (jobCategories[jobField]) {
-                jobCategories[jobField].forEach(category => {
-                    const option = document.createElement("option");
-                    option.value = category;
-                    option.textContent = category;
-                    jobCategorySelect.appendChild(option);
-                });
-                jobCategoryDiv.style.display = "block"; // 보이도록 설정
-            } else {
-                jobCategoryDiv.style.display = "none"; // 숨김 처리
+            if (!jobFieldId) {
+                jobCategoryDiv.style.display = "none"; // 직종이 선택되지 않으면 숨김
+                return;
             }
+
+            $.ajax({
+                url: "/getJobCategories",
+                type: "GET",
+                data: { jobFieldId: jobFieldId },
+                dataType: "json",
+                success: function(response) {
+                    console.log("서버 응답:", response);
+
+                    if (response.length > 0) {
+                        response.forEach(category => {
+                            const option = document.createElement("option");
+                            option.value = category.id;  // 서버에서 받아온 ID 값
+                            option.textContent = category.categoryName; // 서버에서 받아온 직군명
+                            jobCategorySelect.appendChild(option);
+                        });
+                        jobCategoryDiv.style.display = "block"; // 직군 선택창 보이기
+                    } else {
+                        jobCategoryDiv.style.display = "none"; // 데이터 없으면 숨김
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("AJAX 요청 실패:", status, error);
+                }
+            });
         }
     </script>
 </head>
@@ -87,9 +104,9 @@
                 <label for="jobField" class="form-label">희망 직종</label>
                 <select class="form-select" id="jobField" name="jobField" onchange="updateJobCategories()">
                     <option value="">선택</option>
-                    <option value="IT">IT</option>
-                    <option value="금융">금융</option>
-                    <option value="제조">제조</option>
+                    <c:forEach var="jobField" items="${jobFields}">
+                        <option value="${jobField.fieldid}">${jobField.fieldName}</option>
+                    </c:forEach>
                 </select>
             </div>
 

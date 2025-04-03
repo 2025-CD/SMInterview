@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import sm.ac.app.dto.JobFieldDto;
 import sm.ac.app.frame.InterviewRepository;
 
+import java.util.List;
 
 
 @Repository//spring container 위에 동작하기위함.
@@ -14,6 +15,8 @@ public interface JobFieldRepository extends InterviewRepository<String, JobField
     //Mybatis가 다 해줌.
     //따라서 public class가 아닌 interface로 놓는다.
     //예전에 insert,update 이런거 다 써서 했는데 이걸 Mybatis가 해줌.
+
+    List<JobFieldDto> getJobFields(); // 직종 목록 조회
 
 
 
