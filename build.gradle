@@ -9,7 +9,7 @@ version = '0.0.1-SNAPSHOT'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -24,6 +24,7 @@ repositories {
 }
 
 dependencies {
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
@@ -86,7 +87,6 @@ dependencies {
 //    // OAuth2 로그인 관련 의존성
 //    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
-
 tasks.named('test') {
     useJUnitPlatform()
 }

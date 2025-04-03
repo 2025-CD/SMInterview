@@ -1,8 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %><!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
@@ -23,7 +23,7 @@
 <!-- Navigation-->
 <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
     <div class="container px-4 px-lg-5">
-        <a class="navbar-brand" href="#page-top">Start Bootstrap</a>
+        <a class="navbar-brand" href="#page-top">Mockup</a>
         <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ms-auto my-2 my-lg-0">
@@ -32,6 +32,7 @@
                 <li class="nav-item"><a class="nav-link" href="#portfolio">Portfolio</a></li>
                 <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
                 <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+                <li class="nav-item"><a class="nav-link" href="/interview">interview</a></li>
             </ul>
         </div>
     </div>
@@ -51,12 +52,12 @@
 
 
             <div class="col-lg-8 align-self-end">
-                <h1 class="text-white font-weight-bold">"Shine your potential. Prepare for interviews with AI."</h1>
+                <h2 class="text-white font-weight-bold">"면접이 두렵다면? Mockup이 함께합니다."</h2>
                 <hr class="divider" />
             </div>
             <div class="col-lg-8 align-self-baseline">
-                <p class="text-white-75 mb-5"> "A chance to prove yourself—let us help you prepare."</p>
-                <a class="btn btn-primary btn-xl" href="#about">"Worried about interviews? AI is here to help"</a>
+                <p class="text-white-75 mb-5"> "스스로를 증명할 기회, 준비는 우리가 도와줄게요."</p>
+                <a class="btn btn-primary btn-xl" href="#about"> 면접 준비"</a>
             </div>
         </div>
     </div>
@@ -66,7 +67,7 @@
     <div class="container px-4 px-lg-5">
         <div class="row gx-4 gx-lg-5 justify-content-center">
             <div class="col-lg-8 text-center">
-                <h2 class="text-white mt-0">We've got what you need!</h2>
+                <h3 class="text-white mt-0">"당신의 가능성을 더 빛나게, AI와 함께하는 면접 준비"</h3>
                 <hr class="divider divider-light" />
                 <p class="text-white-75 mb-4">Start Bootstrap has everything you need to get your new website up and running in no time! Choose one of our open source, free to download, and easy to use themes! No strings attached!</p>
                 <a class="btn btn-light btn-xl" href="#services">Get Started!</a>
@@ -77,35 +78,49 @@
 <!-- Services-->
 <section class="page-section" id="services">
     <div class="container px-4 px-lg-5">
-        <h2 class="text-center mt-0">At Your Service</h2>
+        <h2 class="text-center mt-0">Mockup의 기능</h2>
         <hr class="divider" />
         <div class="row gx-4 gx-lg-5">
             <div class="col-lg-3 col-md-6 text-center">
                 <div class="mt-5">
                     <div class="mb-2"><i class="bi-gem fs-1 text-primary"></i></div>
-                    <h3 class="h4 mb-2">Sturdy Themes</h3>
-                    <p class="text-muted mb-0">Our themes are updated regularly to keep them bug free!</p>
+                    <h3 class="h4 mb-2">이력서 분석 및 최적화</h3>
+                    <p class="text-muted mb-0">사용자의 이력서를 업로드하여 AI가 분석 및 개선 제안 제공 </p>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 text-center">
                 <div class="mt-5">
                     <div class="mb-2"><i class="bi-laptop fs-1 text-primary"></i></div>
-                    <h3 class="h4 mb-2">Up to Date</h3>
-                    <p class="text-muted mb-0">All dependencies are kept current to keep things fresh.</p>
+                    <h3 class="h4 mb-2">AI 모의 면접</h3>
+                    <p class="text-muted mb-0">AI가 면접 질문을 생성하고 사용자의 답변을 분석 및 실시간 피드백 제공</p>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 text-center">
                 <div class="mt-5">
                     <div class="mb-2"><i class="bi-globe fs-1 text-primary"></i></div>
-                    <h3 class="h4 mb-2">Ready to Publish</h3>
-                    <p class="text-muted mb-0">You can use this design as is, or you can make changes!</p>
+                    <h3 class="h4 mb-2">사람 간 화상 면접 매칭 시스템</h3>
+                    <p class="text-muted mb-0">랜덤 매칭 / 친구 초대 / 멘토-멘티 매칭 기능 제공</p>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 text-center">
                 <div class="mt-5">
                     <div class="mb-2"><i class="bi-heart fs-1 text-primary"></i></div>
-                    <h3 class="h4 mb-2">Made with Love</h3>
-                    <p class="text-muted mb-0">Is it really open source if it's not made with love?</p>
+                    <h3 class="h4 mb-2">면접 녹화 및 리뷰 기능 </h3>
+                    <p class="text-muted mb-0">면접 세션 녹화 후 재생 및 AI 분석 제공 및 개선점 제시?</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="mt-5">
+                    <div class="mb-2"><i class="bi-heart fs-1 text-primary"></i></div>
+                    <h3 class="h4 mb-2">AI 질문 추천 및 면접 피드백</h3>
+                    <p class="text-muted mb-0">지원 직군과 면접 스타일에 맞춘 질문 제공</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="mt-5">
+                    <div class="mb-2"><i class="bi-heart fs-1 text-primary"></i></div>
+                    <h3 class="h4 mb-2">멘토-멘티 면접 시스템</h3>
+                    <p class="text-muted mb-0">경력자가 면접 피드백을 줄 수 있는 구조 제공</p>
                 </div>
             </div>
         </div>
