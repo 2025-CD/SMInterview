@@ -11,12 +11,24 @@
 <div class="container d-flex justify-content-center align-items-center vh-100">
     <div class="card p-4 shadow-lg" style="width: 400px;">
         <h3 class="text-center mb-4">로그인</h3>
-        <a href="/oauth2/authorization/google" class="btn btn-danger w-100 mb-2">Google 로그인</a>
-        <a href="/oauth2/authorization/naver" class="btn btn-success w-100 mb-2">Naver 로그인</a>
-        <a href="/oauth2/authorization/kakao" class="btn btn-warning w-100 mb-2">Kakao 로그인</a>
-        <p class="text-center mt-3">
-            계정이 없나요? <a href="/register">회원가입</a>
-        </p>
+
+        <!-- 일반 로그인 폼 -->
+        <form action="/login" method="post">
+            <div class="mb-3">
+                <label for="email" class="form-label">이메일</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">비밀번호</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">로그인</button>
+        </form>
+
+        <hr>
+
+        <!-- 카카오 로그인 버튼 -->
+        <a href="/oauth2/authorization/kakao" class="btn btn-warning w-100">Kakao 로그인</a>
     </div>
 </div>
 </body>
