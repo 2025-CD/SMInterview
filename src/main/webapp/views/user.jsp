@@ -10,6 +10,16 @@
 <body>
 <div class="container mt-5">
     <h2 class="mb-4">로그인 성공!</h2>
+
+    <%-- 세션 값 확인용 디버깅 코드 --%>
+    <c:if test="${not empty sessionScope.user}">
+        <p>현재 로그인한 사용자 ID: ${sessionScope.user}</p>
+    </c:if>
+    <c:if test="${empty sessionScope.user}">
+        <p>세션에 저장된 사용자가 없습니다.</p>
+    </c:if>
+
+
     <p>카카오에서 가져온 사용자 정보:</p>
     <pre>${userInfo}</pre>
     <a href="/" class="btn btn-primary">홈으로 이동</a>

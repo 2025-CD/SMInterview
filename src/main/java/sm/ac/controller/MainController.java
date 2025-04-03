@@ -24,12 +24,7 @@ public class MainController {
     }
 
 
-//    // ✅ 로그인 페이지 매핑 추가
-//    @GetMapping("/login")
-//    public String login() {
-//        log.info("Navigating to Login Page...");
-//        return "login"; // login.jsp 또는 login.html로 이동
-//    }
+
 
     // 회원가입 페이지
     @GetMapping("/register")
