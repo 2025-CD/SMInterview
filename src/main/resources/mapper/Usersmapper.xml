@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="sm.ac.app.repository.UsersRepository">
 
-    <!-- 단일 회원 정보 조회 -->
+    <!-- 로그인을 위한-->
     <select id="selectOne" parameterType="String" resultType="UsersDto">
         SELECT *
         FROM users
@@ -20,10 +20,10 @@
     <!-- 회원 등록 id는 autoincre로 설정해서 따로 안넣음.-->
     <insert id="insert" parameterType="UsersDto">
         INSERT INTO users (
-            username, password, email, job_field_id, job_category_id
+            id,username,email, password, job_field_id, job_category_id,role
         )
         VALUES (
-                   #{username}, #{password}, #{email}, #{jobFieldId}, #{jobCategoryId}
+                   #{id},#{username}, #{email},#{password}, #{jobfieldid}, #{jobcategoryid},#{role}
                )
     </insert>
 

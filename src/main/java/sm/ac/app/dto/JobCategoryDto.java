@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class JobCategoryDto {
 
-    private int id;
-    private int fieldId;  // job_fields 테이블의 FK
+    private int jobcategoryid;
+    private int jobfieldid;  // job_fields 테이블의 FK
     private String categoryName;
 }

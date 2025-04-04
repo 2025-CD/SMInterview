@@ -5,7 +5,7 @@
 <mapper namespace="sm.ac.app.repository.JobCategoryRepository">
 
     <select id="getJobCategoriesByFieldId" parameterType="int" resultType="JobCategoryDto">
-        SELECT * FROM job_categories WHERE field_id = #{fieldId}
+        SELECT * FROM job_categories WHERE job_field_id = #{jobfieldId}
     </select>
 
 

@@ -1,24 +1,26 @@
 package sm.ac.controller;
 
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.tags.shaded.org.apache.xpath.operations.Mod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import sm.ac.app.dto.JobCategoryDto;
 import sm.ac.app.dto.JobFieldDto;
+import sm.ac.app.dto.UsersDto;
 import sm.ac.app.service.JobCategoryService;
 import sm.ac.app.service.JobFieldService;
+import sm.ac.app.service.UsersService;
 
 import java.util.List;
 
 @Controller
 @Slf4j
+@RequiredArgsConstructor
 public class MainController {
 
     private final JobFieldService jobFieldService;
@@ -26,11 +28,10 @@ public class MainController {
 
     private final JobCategoryService jobCategoryService;
 
-    @Autowired
-    public MainController(JobFieldService jobFieldService, JobCategoryService jobCategoryService) {
-        this.jobFieldService = jobFieldService;
-        this.jobCategoryService = jobCategoryService;
-    }
+
+    final UsersService userService;
+
+
 
 
     @RequestMapping("/")
@@ -67,6 +68,25 @@ public class MainController {
     public List<JobCategoryDto> getJobCategories(@RequestParam("jobFieldId") int jobFieldId) {
         log.info("Fetching job categories for jobFieldId: " + jobFieldId);
         return jobCategoryService.getJobCategories(jobFieldId);
+    }
+
+    // 회원가입 폼 제출 처리 (POST 요청)
+    @PostMapping("/process-signup")
+    public String processSignUp(@ModelAttribute UsersDto usersDto,
+                                RedirectAttributes redirectAttributes,
+                                Model model) throws Exception { // Model은 오류 시 현재 페이지 반환용
+
+        log.info("회원가입 시도: {}", usersDto.getId());
+
+
+        userService.add(usersDto);
+        log.info("회원가입 성공: {}", usersDto.getId());
+
+        // 회원가입 성공 시 리다이렉트와 함께 성공 메시지 전달 (선택 사항)
+        redirectAttributes.addFlashAttribute("successMessage", "회원가입이 성공적으로 완료되었습니다. 로그인해주세요.");
+        return "redirect:/login"; // 로그인 페이지로 리다이렉트
+
+
     }
 
 

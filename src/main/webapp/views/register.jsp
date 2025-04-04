@@ -39,8 +39,10 @@
                     if (response.length > 0) {
                         response.forEach(category => {
                             const option = document.createElement("option");
-                            option.value = category.id;  // 서버에서 받아온 ID 값
+                            option.value = category.jobcategoryid;  // 서버에서 받아온 ID 값
                             option.textContent = category.categoryName; // 서버에서 받아온 직군명
+                            console.log("받아온 직군 ID:", category.jobcategoryid); // 추가된 콘솔 로그
+                            console.log("받아온 직군명:", category.categoryName); // 추가된 콘솔 로그
                             jobCategorySelect.appendChild(option);
                         });
                         jobCategoryDiv.style.display = "block"; // 직군 선택창 보이기
@@ -62,8 +64,8 @@
         <form action="/process-signup" method="POST">
 
             <div class="mb-3">
-                <label for="userid" class="form-label">ID</label>
-                <input type="text" class="form-control" id="userid" name="userid" required>
+                <label for="id" class="form-label">ID</label>
+                <input type="text" class="form-control" id="id" name="id" required>
             </div>
             <div class="mb-3">
                 <label for="username" class="form-label">Name</label>
@@ -77,35 +79,35 @@
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
-            <div class="mb-3">
-                <label for="confirm-password" class="form-label">Confirm Password</label>
-                <input type="password" class="form-control" id="confirm-password" name="confirmPassword" required>
-            </div>
+<%--            <div class="mb-3">--%>
+<%--                <label for="confirm-password" class="form-label">Confirm Password</label>--%>
+<%--                <input type="password" class="form-control" id="confirm-password" name="confirmPassword" required>--%>
+<%--            </div>--%>
 
             <!-- 역할 선택 -->
             <div class="mb-3">
-                <label class="form-label">역할 선택</label><br>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="role" value="mentor" required>
-                    <label class="form-check-label">멘토</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="role" value="mentee">
-                    <label class="form-check-label">멘티</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="role" value="none">
-                    <label class="form-check-label">선택 안 함</label>
-                </div>
+            <label class="form-label">역할 선택</label><br>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="role" value="1" required> <%-- value 변경 --%>
+                <label class="form-check-label">멘토</label>
             </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="role" value="2" required> <%-- value 변경, required는 하나만 있어도 됨 --%>
+                <label class="form-check-label">멘티</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="role" value="0" required> <%-- value 변경 --%>
+                <label class="form-check-label">선택 안 함</label>
+            </div>
+        </div>
 
             <!-- 직종 선택 -->
             <div class="mb-3">
                 <label for="jobField" class="form-label">희망 직종</label>
-                <select class="form-select" id="jobField" name="jobField" onchange="updateJobCategories()">
+                <select class="form-select" id="jobField" name="jobfieldid" onchange="updateJobCategories()">
                     <option value="">선택</option>
                     <c:forEach var="jobField" items="${jobFields}">
-                        <option value="${jobField.fieldid}">${jobField.fieldName}</option>
+                        <option value="${jobField.jobfieldid}">${jobField.fieldName}</option>
                     </c:forEach>
                 </select>
             </div>
@@ -113,7 +115,7 @@
             <!-- 직군 선택 (직종을 선택하면 나타남) -->
             <div class="mb-3" id="jobCategoryDiv" style="display: none;">
                 <label for="jobCategory" class="form-label">희망 직군</label>
-                <select class="form-select" id="jobCategory" name="jobCategory">
+                <select class="form-select" id="jobCategory" name="jobcategoryid">
                     <option value="">선택</option>
                 </select>
             </div>

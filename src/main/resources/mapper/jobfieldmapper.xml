@@ -8,7 +8,7 @@
     <select id="selectOne" parameterType="String" resultType="JobFieldDto">
         SELECT *
         FROM job_fields
-        WHERE id = #{id}
+        WHERE jobfieldid = #{jobfieldid}
     </select>
 
         <!-- 직종 목록 조회 -->

@@ -11,6 +11,28 @@
 <div class="container d-flex justify-content-center align-items-center vh-100">
     <div class="card p-4 shadow-lg" style="width: 400px;">
         <h3 class="text-center mb-4">로그인</h3>
+
+        <form action="/loginimpl" method="POST" class="mb-3">
+            <div class="mb-3">
+                <label for="id" class="form-label">아이디</label>
+                <input type="text" class="form-control" id="id" name="id" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">비밀번호</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">로그인</button>
+            <c:if test="${param.error != null}">
+                <div class="alert alert-danger mt-3">
+                    아이디 또는 비밀번호가 올바르지 않습니다.
+                </div>
+            </c:if>
+            <c:if test="${param.logout != null}">
+                <div class="alert alert-success mt-3">
+                    로그아웃되었습니다.
+                </div>
+            </c:if>
+        </form>
         <a href="/oauth2/authorization/google" class="btn btn-danger w-100 mb-2">Google 로그인</a>
         <a href="/oauth2/authorization/naver" class="btn btn-success w-100 mb-2">Naver 로그인</a>
         <a href="/oauth2/authorization/kakao" class="btn btn-warning w-100 mb-2">Kakao 로그인</a>
