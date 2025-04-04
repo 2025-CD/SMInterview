@@ -10,7 +10,7 @@ spring:
       prefix: /views/
       suffix: .jsp
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/thisisjava?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://127.0.0.1:3306/sm?serverTimezone=Asia/Seoul
     username: root
     password: 1234
   security:
