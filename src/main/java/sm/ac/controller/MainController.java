@@ -1,6 +1,7 @@
 package sm.ac.controller;
 
 
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -23,6 +24,11 @@ public class MainController {
         return "index";
     }
 
+    @GetMapping("/logout2")
+    public String logout2(HttpSession httpSession) {
+        httpSession.removeAttribute("user"); // 세션의 user 정보 초기화
+        return "redirect:/"; // 메인 페이지로 리다이렉트
+    }
 
 
 
