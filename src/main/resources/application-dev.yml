@@ -10,10 +10,6 @@ spring:
       prefix: /views/
       suffix: .jsp
   datasource:
-    #driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    #url: jdbc:log4jdbc:mysql://127.0.0.1:3306/shopdb?characterEncoding=utf8
-    #driver-class-name: com.mysql.cj.jdbc.Driver
-    #url: jdbc:mysql://127.0.0.1:3306/shopdb?characterEncoding=utf8
     url: jdbc:mysql://127.0.0.1:3306/thisisjava?serverTimezone=Asia/Seoul
     username: root
     password: 1234
