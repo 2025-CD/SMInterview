@@ -52,20 +52,4 @@ public class LoginController {
         }
     }
 
-    // 카카오 로그인 처리 (인가 코드로 사용자 정보 가져오기)
-    @PostMapping("/kakao/login")
-    public String kakaoLogin(@RequestParam("code") String code, Model model, HttpSession session) {
-        log.info("카카오 로그인 요청, 인가 코드: {}", code);
-        Optional<Map<String, Object>> userInfoOpt = kakaoService.getUserInfo(code);
-        if (userInfoOpt.isPresent()) {
-            Map<String, Object> userInfo = userInfoOpt.get();
-            session.setAttribute("user", userInfo.get("id"));
-            session.setAttribute("nickname", userInfo.get("nickname"));
-            model.addAttribute("user", userInfo.get("id"));
-            log.info("카카오 로그인 성공! 세션 저장 완료, user: {}", session.getAttribute("user"));
-        } else {
-            log.warn("카카오 로그인 실패: 사용자 정보 없음");
-        }
-        return "redirect:/";
-    }
 }
