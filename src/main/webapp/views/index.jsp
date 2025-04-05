@@ -29,6 +29,8 @@
                 <li class="nav-item"><a class="nav-link" href="#portfolio">Portfolio</a></li>
                 <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
                 <li class="nav-item"><a class="nav-link" href="/interview">Interview</a></li>
+                <li class="nav-item"><a class="nav-link" href="/resume/input">Resume</a></li>
+
 
                 <c:choose>
                     <c:when test="${empty sessionScope.user}">

@@ -4,6 +4,9 @@ server:
     encoding:
       charset: UTF-8
       force: true
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 spring:
   mvc:
     view:
@@ -42,3 +45,6 @@ mybatis:
 logging:
   level:
     root: info
+    # OpenAI API 관련 로깅 (필요에 따라 조절)
+    org.springframework.web.client.RestTemplate: debug
+    sm.ac.controller.ResumeController: debug # ResumeController 관련 상세 로그

@@ -39,20 +39,19 @@ dependencies {
     implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api'
     implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl'
 
-    // 자동 반영
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    // PDF 이력서 분석
+    implementation 'org.apache.pdfbox:pdfbox:2.0.30'
+    implementation 'org.apache.pdfbox:pdfbox-tools:2.0.30'
 
-    // Test
-    testImplementation 'org.projectlombok:lombok'
-    testAnnotationProcessor 'org.projectlombok:lombok'
+    // DOCX 이력서 분석
+    implementation 'org.apache.poi:poi-ooxml:5.2.5' // 최신 버전 확인 후 사용 (5.4.0은 존재하지 않을 수 있음)
 
-    // OAuth2 로그인 관련 의존성 (명확하게 정리)
+    // OAuth2 로그인 관련 의존성
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.security:spring-security-oauth2-client'
     implementation 'org.springframework.security:spring-security-web'
     implementation 'org.springframework.security:spring-security-config'
-
 }
 
 tasks.named('test') {
