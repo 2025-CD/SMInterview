@@ -73,7 +73,7 @@ public class ResumeController {
             }
         } else if (request.getResumeText() != null && !request.getResumeText().isEmpty()) {
             String resumeText = request.getResumeText();
-            String analysisResult = "텍스트 입력 분석 결과 (구현 예정):\n" + resumeText;
+            String analysisResult = "텍스트 입력  분석 결과 (구현 예정):\n" + resumeText;
             return ResponseEntity.ok(analysisResult);
         } else {
             return ResponseEntity.badRequest().body("이력서 파일을 업로드하거나 텍스트를 입력해주세요.");
