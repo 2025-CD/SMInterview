@@ -1,15 +1,15 @@
 package sm.ac.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import sm.ac.dto.ResumeAnalyzeRequest;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +31,10 @@ public class ResumeController {
     private final RestTemplate openaiRestTemplate;
     private final ObjectMapper objectMapper;
 
+
+    @Value("${openai.api-key}") // 이 라인을 추가
+    private String openaiApiKey;
+
     @Autowired
     public ResumeController(RestTemplate openaiRestTemplate, ObjectMapper objectMapper) {
         this.openaiRestTemplate = openaiRestTemplate;
@@ -42,13 +46,14 @@ public class ResumeController {
         return "resumeInput";
     }
 
-    @PostMapping("/api/analyze")
-    public ResponseEntity<?> analyzeResume(ResumeAnalyzeRequest request, @RequestParam(value = "targetJob", required = false) String targetJob) {
+    @PostMapping("/result") // 새로운 POST 요청 처리 메서드
+    public String analyzeResumeAndShowResult(@RequestParam("resumeFile") MultipartFile resumeFile,
+                                             @RequestParam(value = "targetJob", required = false) String targetJob,
+                                             Model model) {
         String resumeContent = "";
         String fileContentType = null;
 
-        if (request.getResumeFile() != null && !request.getResumeFile().isEmpty()) {
-            MultipartFile resumeFile = request.getResumeFile();
+        if (resumeFile != null && !resumeFile.isEmpty()) {
             try (InputStream inputStream = resumeFile.getInputStream()) {
                 fileContentType = resumeFile.getContentType();
                 if (fileContentType != null) {
@@ -67,31 +72,36 @@ public class ResumeController {
                         extractor.close();
                         document.close();
                     } else {
-                        return ResponseEntity.badRequest().body("지원하지 않는 파일 형식입니다 (텍스트, PDF, DOCX만 지원).");
+                        model.addAttribute("errorMessage", "지원하지 않는 파일 형식입니다 (텍스트, PDF, DOCX만 지원).");
+                        return "resumeInput";
                     }
                 } else {
-                    return ResponseEntity.badRequest().body("파일 형식을 확인할 수 없습니다.");
+                    model.addAttribute("errorMessage", "파일 형식을 확인할 수 없습니다.");
+                    return "resumeInput";
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일을 읽는 동안 오류가 발생했습니다.");
+                model.addAttribute("errorMessage", "파일을 읽는 동안 오류가 발생했습니다.");
+                return "resumeInput";
             }
-        } else if (request.getResumeText() != null && !request.getResumeText().isEmpty()) {
-            resumeContent = request.getResumeText();
         } else {
-            return ResponseEntity.badRequest().body("이력서 파일을 업로드하거나 텍스트를 입력해주세요.");
+            model.addAttribute("errorMessage", "이력서 파일을 업로드해주세요.");
+            return "resumeInput";
         }
 
         // OpenAI API 호출 (목표 직무 전달)
         if (!resumeContent.isEmpty()) {
             try {
                 Map<String, Object> analysisResult = callOpenAiApi(resumeContent, targetJob);
-                return ResponseEntity.ok(analysisResult); // JSON 형태의 결과 반환
+                model.addAttribute("analysisResult", analysisResult); // 결과를 Model에 담기
+                return "resumeResult"; // 결과 페이지로 이동
             } catch (IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("OpenAI API 응답 처리 오류: " + e.getMessage());
+                model.addAttribute("errorMessage", "OpenAI API 응답 처리 오류: " + e.getMessage());
+                return "resumeInput";
             }
         } else {
-            return ResponseEntity.badRequest().body("추출된 이력서 내용이 없습니다.");
+            model.addAttribute("errorMessage", "추출된 이력서 내용이 없습니다.");
+            return "resumeInput";
         }
     }
 
@@ -147,7 +157,11 @@ public class ResumeController {
         requestBody.put("messages", List.of(Map.of("role", "user", "content", prompt)));
         requestBody.put("temperature", 0.7); // 창의성 조절 (0.0 ~ 1.0)
 
-        ResponseEntity<Map> response = openaiRestTemplate.postForEntity(apiUrl, requestBody, Map.class);
+        org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
+        headers.set("Authorization", "Bearer " + openaiApiKey); // API 키를 헤더에 설정
+        org.springframework.http.HttpEntity<Map<String, Object>> requestEntity = new org.springframework.http.HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<Map> response = openaiRestTemplate.postForEntity(apiUrl, requestEntity, Map.class);
 
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
             List<Map<String, Object>> choices = (List<Map<String, Object>>) response.getBody().get("choices");
@@ -167,5 +181,10 @@ public class ResumeController {
             throw new IOException("OpenAI API 호출 실패: " + response.getStatusCode());
         }
         return null;
+    }
+
+    @GetMapping("/result") // 결과 페이지를 보여주는 GET 요청 처리
+    public String showResumeResult() {
+        return "resumeResult";
     }
 }

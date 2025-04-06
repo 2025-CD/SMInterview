@@ -38,7 +38,7 @@
     <div class="card mb-3">
         <div class="card-header">파일 업로드</div>
         <div class="card-body">
-            <form id="uploadForm" action="/resume/api/analyze" method="post" enctype="multipart/form-data">
+            <form id="uploadForm" action="/resume/result" method="post" enctype="multipart/form-data">
                 <c:if test="${_csrf != null}">
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 </c:if>
@@ -66,7 +66,7 @@
     <div class="card">
         <div class="card-header">텍스트 직접 입력</div>
         <div class="card-body">
-            <form id="textForm" action="/resume/api/analyze" method="post">
+            <form id="textForm" action="/resume/result" method="post">
                 <c:if test="${_csrf != null}">
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 </c:if>
@@ -100,64 +100,14 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // 기존 JavaScript 코드는 결과 페이지로 이동하므로 더 이상 필요하지 않습니다.
+    // 필요하다면 submit 이벤트만 남겨두고 fetch 부분을 제거해도 됩니다.
     document.getElementById('uploadForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const formData = new FormData(this);
-        fetch('/resume/api/analyze', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json()) // JSON 형태의 응답을 받음
-            .then(data => {
-                let resultHtml = '';
-                for (const key in data) {
-                    if (data.hasOwnProperty(key)) {
-                        const item = data[key];
-                        resultHtml += `
-                        <div class="analysis-item">
-                            <h4>${key}</h4>
-                            <div><strong>분석:</strong> ${item['분석']}</div>
-                            <div><strong>개선 제안:</strong> ${item['개선 제안']}</div>
-                        </div>
-                    `;
-                    }
-                }
-                document.getElementById('resultContent').innerHTML = resultHtml;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('resultContent').innerText = '분석 중 오류가 발생했습니다.';
-            });
+        // Submit 이벤트는 그대로 둡니다.
     });
 
     document.getElementById('textForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const formData = new FormData(this);
-        fetch('/resume/api/analyze', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json()) // JSON 형태의 응답을 받음
-            .then(data => {
-                let resultHtml = '';
-                for (const key in data) {
-                    if (data.hasOwnProperty(key)) {
-                        const item = data[key];
-                        resultHtml += `
-                        <div class="analysis-item">
-                            <h4>${key}</h4>
-                            <div><strong>분석:</strong> ${item['분석']}</div>
-                            <div><strong>개선 제안:</strong> ${item['개선 제안']}</div>
-                        </div>
-                    `;
-                    }
-                }
-                document.getElementById('resultContent').innerHTML = resultHtml;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('resultContent').innerText = '분석 중 오류가 발생했습니다.';
-            });
+        // Submit 이벤트는 그대로 둡니다.
     });
 </script>
 </body>
