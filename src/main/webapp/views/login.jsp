@@ -29,6 +29,7 @@
 
         <!-- 카카오 로그인 버튼 -->
         <a href="/oauth2/authorization/kakao" class="btn btn-warning w-100">Kakao 로그인</a>
+
     </div>
 </div>
 </body>
