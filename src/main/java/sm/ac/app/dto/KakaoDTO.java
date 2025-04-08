@@ -1,4 +1,4 @@
-package sm.ac.dto;
+package sm.ac.app.dto;
 
 import lombok.Getter;
 
