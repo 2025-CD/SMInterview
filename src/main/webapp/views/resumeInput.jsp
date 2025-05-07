@@ -9,150 +9,129 @@
     <title>AI 이력서 분석 및 최적화</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Custom Styles  */
         body {
-            font-family: sans-serif;
-            background-color: #f8f8f8;
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #f2f7fd, #e0f0ff);
             color: #333;
             line-height: 1.6;
             margin: 0;
             padding: 0;
         }
 
-
         .main-content {
-            width: 80%;
-            margin: 20px auto;
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
             background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
-
 
         .page-header {
             text-align: center;
             padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            position: relative;
         }
-
 
         .page-header h1 {
-            color: #444;
-            font-size: 2em;
-            margin-bottom: 10px;
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #2c3e50;
         }
 
+        .page-header h1::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background-color: #3498db;
+            margin: 12px auto 0;
+        }
 
         .page-description {
-            color: #777;
-            font-size: 1.1em;
+            color: #555;
+            font-size: 1.05em;
         }
-
 
         .analysis-form {
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
+            gap: 20px;
         }
-
 
         .form-card {
-            width: 48%;
-            margin-bottom: 20px;
+            flex: 1;
+            min-width: 300px;
+            background: #fefefe;
             padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
         }
 
-
         .form-card h2 {
-            color: #555;
-            font-size: 1.5em;
-            margin-bottom: 15px;
+            font-size: 1.4em;
+            color: #2c3e50;
+            margin-bottom: 20px;
             border-bottom: 1px solid #eee;
             padding-bottom: 10px;
         }
 
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-
         .form-label {
-            display: block;
-            margin-bottom: 5px;
-            color: #666;
-            font-weight: bold;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 6px;
         }
-
 
         .input-file, .input-textarea, .select-job {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 1em;
         }
 
-
         .input-textarea {
             resize: vertical;
+            min-height: 160px;
         }
-
 
         .submit-button {
-            background-color: #e67e22;  /* Orange */
+            background-color: #3498db;
             color: white;
-            padding: 12px 20px;
+            padding: 10px 18px;
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: background-color 0.3s ease;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: background-color 0.3s;
         }
-
 
         .submit-button:hover {
-            background-color: #d35400;  /* Darker orange */
+            background-color: #2c80b4;
         }
-
 
         .analysis-result {
-            margin-top: 30px;
+            margin-top: 40px;
             padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f8f9fa;
         }
-
 
         .analysis-result h2 {
-            color: #555;
             font-size: 1.5em;
+            color: #333;
             margin-bottom: 15px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
         }
 
-
-        .result-content {
-            /* Style for displaying analysis results  */
-        }
-
-
-        /* Responsive Design  */
         @media (max-width: 768px) {
-            .main-content {
-                width: 95%;
-            }
             .analysis-form {
                 flex-direction: column;
-            }
-            .form-card {
-                width: 100%;
             }
         }
     </style>
@@ -164,10 +143,9 @@
         <p class="lead page-description">이력서를 업로드하거나 직접 입력하여 AI의 분석 및 최적화 제안을 받아보세요.</p>
     </header>
 
-
     <section class="analysis-form">
         <div class="form-card upload-form">
-            <h2>파일 업로드</h2>
+            <h2><i class="fas fa-file-upload"></i> 파일 업로드</h2>
             <form id="uploadForm" action="/resume/result" method="post" enctype="multipart/form-data">
                 <c:if test="${_csrf != null}">
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
@@ -188,13 +166,12 @@
                         <option value="기획자">기획자</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary submit-button">파일 업로드 및 분석</button>
+                <button type="submit" class="submit-button"><i class="fas fa-upload"></i> 파일 업로드 및 분석</button>
             </form>
         </div>
 
-
         <div class="form-card text-form">
-            <h2>텍스트 직접 입력</h2>
+            <h2><i class="fas fa-keyboard"></i> 텍스트 직접 입력</h2>
             <form id="textForm" action="/resume/result" method="post">
                 <c:if test="${_csrf != null}">
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
@@ -215,29 +192,22 @@
                         <option value="기획자">기획자</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary submit-button">텍스트 분석</button>
+                <button type="submit" class="submit-button"><i class="fas fa-magic"></i> 텍스트 분석</button>
             </form>
         </div>
     </section>
 
-
     <section class="analysis-result">
-        <h2>분석 결과</h2>
+        <h2><i class="fas fa-chart-line"></i> 분석 결과</h2>
         <div id="resultContent" class="result-content">
         </div>
     </section>
 </div>
 
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    //  Your existing JavaScript
-    document.getElementById('uploadForm').addEventListener('submit', function(event) {
-    });
-
-
-    document.getElementById('textForm').addEventListener('submit', function(event) {
-    });
+    document.getElementById('uploadForm').addEventListener('submit', function(event) {});
+    document.getElementById('textForm').addEventListener('submit', function(event) {});
 </script>
 </body>
 </html>

@@ -1,45 +1,69 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title>Creative - Start Bootstrap Theme.</title>
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/SimpleLightbox/2.1.0/simpleLightbox.min.css" rel="stylesheet" />
-    <link href="css/styles.css" rel="stylesheet" />
+    <title>Mockup AI 모의면접 플랫폼</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #dfefff, #f0f5ff);
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .hero {
+            background: linear-gradient(to right, #5fa8d3, #bee9e8);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+        .section-title {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        .feature-icon {
+            font-size: 3rem;
+            color: #007bff;
+            margin-bottom: 1rem;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 40px 0;
+            text-align: center;
+        }
+        .card:hover {
+            background-color: #e9f5ff;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+    </style>
 </head>
-<body id="page-top">
-<nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNav">
-    <div class="container px-4 px-lg-5">
-        <a class="navbar-brand" href="#page-top">Mockup</a>
-        <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
-                aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav ms-auto my-2 my-lg-0">
-                <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-                <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
-                <li class="nav-item"><a class="nav-link" href="#portfolio">Portfolio</a></li>
-                <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-                <li class="nav-item"><a class="nav-link" href="/interview">Interview</a></li>
-                <li class="nav-item"><a class="nav-link" href="/resume/input">Resume</a></li>
-                <li class="nav-item"><a class="nav-link" href="/aiinterview">Aiinterview</a></li>
-
-
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/">Mockup</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/resume/input">이력서 분석</a></li>
+                <li class="nav-item"><a class="nav-link" href="/aiinterview">AI 모의면접</a></li>
+                <li class="nav-item"><a class="nav-link" href="/interview">화상 면접</a></li>
                 <c:choose>
                     <c:when test="${empty sessionScope.user}">
-                        <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/login">로그인</a></li>
                     </c:when>
                     <c:otherwise>
-                        <li class="nav-item"><span class="nav-link">Welcome,${sessionScope.nickname}님 </li>
-                        <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+                        <li class="nav-item"><span class="nav-link">${sessionScope.nickname}님</span></li>
+                        <li class="nav-item"><a class="nav-link" href="/logout">로그아웃</a></li>
                     </c:otherwise>
                 </c:choose>
             </ul>
@@ -47,200 +71,69 @@
     </div>
 </nav>
 
-<header class="masthead">
-    <div class="container px-4 px-lg-5 h-100">
-        <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
-            <div class="col-lg-8 align-self-end">
-                <h2 class="text-white font-weight-bold">"면접이 두렵다면? Mockup이 함께합니다."</h2>
-                <hr class="divider" />
-            </div>
-            <div class="col-lg-8 align-self-baseline">
-                <p class="text-white-75 mb-5"> "스스로를 증명할 기회, 준비는 우리가 도와줄게요."</p>
-                <a class="btn btn-primary btn-xl" href="#about"> 면접 준비</a>
-            </div>
-        </div>
+<header class="hero">
+    <div class="container">
+        <h1 class="display-4 fw-bold">AI 모의면접으로 준비된 면접을 시작하세요</h1>
+        <p class="lead">실전처럼 연습하고, 실력처럼 피드백 받으세요.</p>
+        <a href="/aiinterview" class="btn btn-light btn-lg mt-3">AI 면접 시작하기</a>
     </div>
 </header>
-<section class="page-section bg-primary" id="about">
-    <div class="container px-4 px-lg-5">
-        <div class="row gx-4 gx-lg-5 justify-content-center">
-            <div class="col-lg-8 text-center">
-                <h3 class="text-white mt-0">"당신의 가능성을 더 빛나게, AI와 함께하는 면접 준비"</h3>
-                <hr class="divider divider-light" />
-                <p class="text-white-75 mb-4">Start Bootstrap has everything you need to get your new website up and running in no time! Choose one of our open source, free to download, and easy to use themes! No strings attached!</p>
-                <a class="btn btn-light btn-xl" href="#services">Get Started!</a>
-            </div>
-        </div>
-    </div>
-</section>
-<section class="page-section" id="services">
-    <div class="container px-4 px-lg-5">
-        <h2 class="text-center mt-0">Mockup의 기능</h2>
-        <hr class="divider" />
-        <div class="row gx-4 gx-lg-5">
-            <div class="col-lg-3 col-md-6 text-center">
-                <div class="mt-5">
-                    <div class="mb-2"><i class="bi-gem fs-1 text-primary"></i></div>
-                    <h3 class="h4 mb-2">이력서 분석 및 최적화</h3>
-                    <p class="text-muted mb-0">사용자의 이력서를 업로드하여 AI가 분석 및 개선 제안 제공 </p>
+
+<section class="py-5">
+    <div class="container">
+        <h2 class="section-title text-center">Mockup 주요 기능</h2>
+        <div class="row text-center mt-4">
+            <div class="col-md-4">
+                <div class="card p-4" onclick="location.href='/resume/input'">
+                    <i class="bi bi-file-earmark-text feature-icon"></i>
+                    <h5 class="fw-bold">이력서 분석 및 최적화</h5>
+                    <p>AI가 이력서를 분석하고 개선 방향을 제시합니다.</p>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 text-center">
-                <div class="mt-5">
-                    <div class="mb-2"><i class="bi-laptop fs-1 text-primary"></i></div>
-                    <h3 class="h4 mb-2">AI 모의 면접</h3>
-                    <p class="text-muted mb-0">AI가 면접 질문을 생성하고 사용자의 답변을 분석 및 실시간 피드백 제공</p>
+            <div class="col-md-4">
+                <div class="card p-4" onclick="location.href='/aiinterview'">
+                    <i class="bi bi-robot feature-icon"></i>
+                    <h5 class="fw-bold">AI 모의 면접</h5>
+                    <p>실시간 음성 질문 및 답변, 피드백을 제공합니다.</p>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 text-center">
-                <div class="mt-5">
-                    <div class="mb-2"><i class="bi-globe fs-1 text-primary"></i></div>
-                    <h3 class="h4 mb-2">사람 간 화상 면접 매칭 시스템</h3>
-                    <p class="text-muted mb-0">랜덤 매칭 / 친구 초대 / 멘토-멘티 매칭 기능 제공</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 text-center">
-                <div class="mt-5">
-                    <div class="mb-2"><i class="bi-heart fs-1 text-primary"></i></div>
-                    <h3 class="h4 mb-2">면접 녹화 및 리뷰 기능 </h3>
-                    <p class="text-muted mb-0">면접 세션 녹화 후 재생 및 AI 분석 제공 및 개선점 제시?</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 text-center">
-                <div class="mt-5">
-                    <div class="mb-2"><i class="bi-heart fs-1 text-primary"></i></div>
-                    <h3 class="h4 mb-2">AI 질문 추천 및 면접 피드백</h3>
-                    <p class="text-muted mb-0">지원 직군과 면접 스타일에 맞춘 질문 제공</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 text-center">
-                <div class="mt-5">
-                    <div class="mb-2"><i class="bi-heart fs-1 text-primary"></i></div>
-                    <h3 class="h4 mb-2">멘토-멘티 면접 시스템</h3>
-                    <p class="text-muted mb-0">경력자가 면접 피드백을 줄 수 있는 구조 제공</p>
+            <div class="col-md-4">
+                <div class="card p-4" onclick="location.href='/interview'">
+                    <i class="bi bi-camera-video feature-icon"></i>
+                    <h5 class="fw-bold">화상 면접 시스템</h5>
+                    <p>사람과 사람 간의 랜덤 또는 지정 면접 매칭 기능을 제공합니다.</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<div id="portfolio">
-    <div class="container-fluid p-0">
-        <div class="row g-0">
-            <div class="col-lg-4 col-sm-6">
-                <a class="portfolio-box" href="assets/img/portfolio/fullsize/1.jpg" title="Project Name">
-                    <img class="img-fluid" src="assets/img/portfolio/thumbnails/1.jpg" alt="..." />
-                    <div class="portfolio-box-caption">
-                        <div class="project-category text-white-50">Category</div>
-                        <div class="project-name">Project Name</div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-lg-4 col-sm-6">
-                <a class="portfolio-box" href="assets/img/portfolio/fullsize/2.jpg" title="Project Name">
-                    <img class="img-fluid" src="assets/img/portfolio/thumbnails/2.jpg" alt="..." />
-                    <div class="portfolio-box-caption">
-                        <div class="project-category text-white-50">Category</div>
-                        <div class="project-name">Project Name</div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-lg-4 col-sm-6">
-                <a class="portfolio-box" href="assets/img/portfolio/fullsize/3.jpg" title="Project Name">
-                    <img class="img-fluid" src="assets/img/portfolio/thumbnails/3.jpg" alt="..." />
-                    <div class="portfolio-box-caption">
-                        <div class="project-category text-white-50">Category</div>
-                        <div class="project-name">Project Name</div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-lg-4 col-sm-6">
-                <a class="portfolio-box" href="assets/img/portfolio/fullsize/4.jpg" title="Project Name">
-                    <img class="img-fluid" src="assets/img/portfolio/thumbnails/4.jpg" alt="..." />
-                    <div class="portfolio-box-caption">
-                        <div class="project-category text-white-50">Category</div>
-                        <div class="project-name">Project Name</div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-lg-4 col-sm-6">
-                <a class="portfolio-box" href="assets/img/portfolio/fullsize/5.jpg" title="Project Name">
-                    <img class="img-fluid" src="assets/img/portfolio/thumbnails/5.jpg" alt="..." />
-                    <div class="portfolio-box-caption">
-                        <div class="project-category text-white-50">Category</div>
-                        <div class="project-name">Project Name</div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-lg-4 col-sm-6">
-                <a class="portfolio-box" href="assets/img/portfolio/fullsize/6.jpg" title="Project Name">
-                    <img class="img-fluid" src="assets/img/portfolio/thumbnails/6.jpg" alt="..." />
-                    <div class="portfolio-box-caption p-3">
-                        <div class="project-category text-white-50">Category</div>
-                        <div class="project-name">Project Name</div>
-                    </div>
-                </a>
-            </div>
+
+<section class="footer">
+    <div class="container">
+        <h5 class="mb-3">Mockup 위치 안내</h5>
+        <div class="mb-3">
+            <div id="map" style="height: 300px; width: 100%; border: 1px solid #ccc; border-radius: 8px;"></div>
         </div>
-    </div>
-</div>
-<section class="page-section bg-dark text-white">
-    <div class="container px-4 px-lg-5 text-center">
-        <h2 class="mb-4">Free Download at Start Bootstrap!</h2>
-        <a class="btn btn-light btn-xl" href="https://startbootstrap.com/theme/creative/">Download Now!</a>
+        <p class="text-muted">© 2025 Mockup Inc. All rights reserved.</p>
     </div>
 </section>
-<section class="page-section" id="contact">
-    <div class="container px-4 px-lg-5">
-        <div class="row gx-4 gx-lg-5 justify-content-center">
-            <div class="col-lg-8 col-xl-6 text-center">
-                <h2 class="mt-0">Let's Get In Touch!</h2>
-                <hr class="divider" />
-                <p class="text-muted mb-5">Ready to start your next project with us? Send us a messages and we will get back to you as soon as possible!</p>
-            </div>
-        </div>
-        <div class="row gx-4 gx-lg-5 justify-content-center mb-5">
-            <div class="col-lg-6">
-                <form id="contactForm" data-sb-form-api-token="API_TOKEN">
-                    <div class="form-floating mb-3">
-                        <input class="form-control" id="name" type="text" placeholder="Enter your name..." data-sb-validations="required" />
-                        <label for="name">Full name</label>
-                        <div class="invalid-feedback" data-sb-feedback="name:required">A name is required.</div>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input class="form-control" id="email" type="email" placeholder="name@example.com" data-sb-validations="required,email" />
-                        <label for="email">Email address</label>
-                        <div class="invalid-feedback" data-sb-feedback="email:required">An email is required.</div>
-                        <div class="invalid-feedback" data-sb-feedback="email:email">Email is not valid.</div>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input class="form-control" id="phone" type="tel" placeholder="(123) 456-7890" data-sb-validations="required" />
-                        <label for="phone">Phone number</label>
-                        <div class="invalid-feedback" data-sb-feedback="phone:required">A phone number is required.</div>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <textarea class="form-control" id="message" type="text" placeholder="Enter your message here..." style="height: 10rem" data-sb-validations="required"></textarea>
-                        <label for="message">Message</label>
-                        <div class="invalid-feedback" data-sb-feedback="message:required">A message is required.</div>
-                    </div>
-                    <div class="d-none" id="submitSuccessMessage">
-                        <div class="text-center mb-3">
-                            <div class="fw-bolder">Form submission successful!</div>
-                            To activate this form, sign up at
-                            <br />
-                            <a href="https://startbootstrap.com/solution/contact-forms">https://startbootstrap.com/solution/contact-forms</a>
-                        </div>
-                    </div>
-                    <div class="d-none" id="submitErrorMessage"><div class="text-center text-danger mb-3">Error sending message!</div></div>
-                    <div class="d-grid"><button class="btn btn-primary btn-xl disabled" id="submitButton" type="submit">Submit</button></div>
-                </form>
-            </div>
-        </div>
-        <div class="row gx-4 gx-lg-5 justify-content-center">
-            <div class="col-lg-4 text-center mb-5 mb-lg-0">
-                <i class="bi-phone fs-2 mb-3 text-muted"></i>
-                <div>+1 (555) 123-4567</div>
-            </div>
-        </div>
-    </div>
-</section>
-<footer class="bg-light
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_KAKAO_API_KEY"></script>
+<script>
+    kakao.maps.load(function () {
+        const container = document.getElementById('map');
+        const options = {
+            center: new kakao.maps.LatLng(37.5665, 126.9780),
+            level: 3
+        };
+        const map = new kakao.maps.Map(container, options);
+
+        const marker = new kakao.maps.Marker({
+            position: new kakao.maps.LatLng(37.5665, 126.9780),
+            map: map
+        });
+    });
+</script>
+</body>
+</html>
