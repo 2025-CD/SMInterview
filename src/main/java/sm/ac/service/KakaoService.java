@@ -18,8 +18,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class KakaoService {
 
-    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
+    @Value("${client-id}")
     private String clientId;
+
+    @Value("${client-secret}")
+    private String clientSecret;  // 혹시 카카오 토큰 요청에 필요하면 사용
+
 
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String redirectUri;

@@ -21,8 +21,8 @@ spring:
       client:
         registration:
           kakao:
-            client-id: d7b42182abb7a263c012e30edc19cbee
-            client-secret: SjUpGjb2r16QV62kXsUx5avZOWYFNOlZ
+            client-id: ${client-id}
+            client-secret: ${client-secret}
             scope:
               - account_email
               - profile_nickname
