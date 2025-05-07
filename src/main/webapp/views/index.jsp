@@ -30,6 +30,7 @@
                 <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
                 <li class="nav-item"><a class="nav-link" href="/interview">Interview</a></li>
                 <li class="nav-item"><a class="nav-link" href="/resume/input">Resume</a></li>
+                <li class="nav-item"><a class="nav-link" href="/aiinterview">Aiinterview</a></li>
 
 
                 <c:choose>
