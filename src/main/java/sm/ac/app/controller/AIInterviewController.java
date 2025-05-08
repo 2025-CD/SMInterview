@@ -35,10 +35,15 @@ public class AIInterviewController {
         try {
             String prompt = job + " 면접에서 사용할 질문을 하나 만들어줘.";
 
+
+
             // HTTP 요청 헤더
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.setBearerAuth(apiKey);
+
+            System.out.println("🔐 API KEY (length): " + (apiKey == null ? "NULL" : apiKey.length()));
+            System.out.println("📡 Bearer header: " + headers.get("Authorization"));
 
             // 메시지 및 본문 구성
             Map<String, Object> message = Map.of(

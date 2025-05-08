@@ -16,8 +16,6 @@
             margin: 0;
             padding: 0;
         }
-
-
         .main-content {
             width: 80%;
             margin: 30px auto;
@@ -26,13 +24,11 @@
             border-radius: 8px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
         }
-
         .page-header h1 {
             text-align: center;
             color: #333;
             margin-bottom: 20px;
         }
-
         #question-area {
             min-height: 100px;
             background-color: #f1f1f1;
@@ -40,18 +36,15 @@
             border-radius: 6px;
             border-left: 4px solid #0d6efd;
         }
-
         #answer-area {
             resize: none;
             overflow: hidden;
             min-height: 100px;
         }
-
         .form-label {
             font-weight: bold;
             color: #555;
         }
-
         #volume-visual {
             height: 10px;
             background-color: #ccc;
@@ -59,25 +52,21 @@
             border-radius: 5px;
             overflow: hidden;
         }
-
         #volume-bar {
             height: 100%;
             width: 0%;
             background-color: #28a745;
             transition: width 0.2s ease;
         }
-
         .btn-group button {
             min-width: 110px;
         }
-
         .feedback-box {
             background-color: #f9f9f9;
             border-left: 4px solid #ffc107;
             padding: 15px;
             border-radius: 5px;
         }
-
         @media (max-width: 768px) {
             .main-content {
                 width: 95%;
@@ -133,5 +122,142 @@
         <div id="feedback-content">답변에 대한 피드백이 여기에 표시됩니다.</div>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    const csrfToken = "${_csrf.token}";
+    const csrfHeader = "${_csrf.headerName}";
+
+
+    const tts = window.speechSynthesis;
+    const ttsUtterance = new SpeechSynthesisUtterance();
+
+    function speak(text) {
+        ttsUtterance.text = text;
+        tts.speak(ttsUtterance);
+    }
+
+    $(document).ready(function () {
+        $("#start-interview").click(function () {
+            console.log("면접 시작 버튼 클릭됨");
+            const selectedJob = $("#jobSelect").val();
+            if (!selectedJob) {
+                alert("직무를 선택해주세요.");
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/aiinterview/question",
+                data: { job: selectedJob },
+                // beforeSend: function (xhr) {
+                //     xhr.setRequestHeader(csrfHeader, csrfToken);
+                // },
+                success: function (question) {
+                    $("#question-area").text(question);
+                    speak(question);
+                },
+                error: function () {
+                    alert("질문 생성 오류 발생");
+                }
+            });
+        });
+
+        const stt = new webkitSpeechRecognition();
+        stt.continuous = true;
+        stt.interimResults = true;
+
+        stt.onresult = function (event) {
+            let transcript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                transcript += event.results[i][0].transcript;
+            }
+            $("#answer-area").val(transcript);
+        };
+
+        stt.onend = function () {
+            stopVisualizer();
+            $("#stop-stt").prop("disabled", true);
+            $("#start-stt").prop("disabled", false);
+        };
+
+        $("#start-stt").click(function () {
+            stt.start();
+            $("#start-stt").prop("disabled", true);
+            $("#stop-stt").prop("disabled", false);
+            startVisualizer();
+        });
+
+        $("#stop-stt").click(function () {
+            stt.stop();
+        });
+
+        $("#submit-answer").click(function () {
+            const answer = $("#answer-area").val();
+            const job = $("#jobSelect").val();
+            if (!answer.trim()) {
+                alert("답변 내용을 입력해주세요.");
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/aiinterview/feedback",
+                data: { answer: answer, job: job },
+                // beforeSend: function (xhr) {
+                //     xhr.setRequestHeader(csrfHeader, csrfToken);
+                // },
+                success: function (feedback) {
+                    $("#feedback-content").text(feedback);
+                },
+                error: function () {
+                    $("#feedback-content").text("피드백 생성 오류 발생");
+                }
+            });
+        });
+
+        // 데시벨 시각화
+        let audioContext, analyser, microphone, animationId;
+
+        function startVisualizer() {
+            navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                microphone = audioContext.createMediaStreamSource(stream);
+                microphone.connect(analyser);
+                analyser.fftSize = 256;
+
+                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+                function update() {
+                    analyser.getByteFrequencyData(dataArray);
+                    const volume = dataArray.reduce((a, b) => a + b) / dataArray.length;
+                    const percent = Math.min(100, Math.round(volume));
+                    $("#volume-bar").css("width", percent + "%");
+                    animationId = requestAnimationFrame(update);
+                }
+
+                update();
+            }).catch((err) => {
+                console.error("마이크 접근 실패:", err);
+            });
+        }
+
+        function stopVisualizer() {
+            if (audioContext) {
+                audioContext.close();
+                cancelAnimationFrame(animationId);
+            }
+            $("#volume-bar").css("width", "0%");
+        }
+
+        // 자동 높이 조절
+        const textarea = document.getElementById("answer-area");
+        textarea.addEventListener("input", function () {
+            this.style.height = "auto";
+            this.style.height = this.scrollHeight + "px";
+        });
+    });
+</script>
 </body>
 </html>
