@@ -1,4 +1,4 @@
-package sm.ac.service;
+package sm.ac.app.service;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;

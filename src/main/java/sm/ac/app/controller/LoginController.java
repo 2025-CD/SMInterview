@@ -1,26 +1,20 @@
-package sm.ac.controller;
+package sm.ac.app.controller;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import sm.ac.service.KakaoService;
-
-import java.util.Map;
-import java.util.Optional;
+import sm.ac.app.service.KakaoService;
 
 @Controller
 @SessionAttributes("user")
 @Slf4j
 @RequiredArgsConstructor
 public class LoginController {
-
-    private final KakaoService kakaoService; // 수동 로그인와 카카오 로그인을 모두 처리
 
     // 로그인 페이지 반환
     @GetMapping("/login")

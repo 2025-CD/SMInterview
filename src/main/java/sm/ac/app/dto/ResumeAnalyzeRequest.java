@@ -1,4 +1,4 @@
-package sm.ac.dto;
+package sm.ac.app.dto;
 
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;

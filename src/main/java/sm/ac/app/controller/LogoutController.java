@@ -1,4 +1,4 @@
-package sm.ac.controller;
+package sm.ac.app.controller;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;

@@ -1,20 +1,20 @@
 server:
-  port: 8080
+  port: 8081
   servlet:
     encoding:
       charset: UTF-8
       force: true
     multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
+#      max-file-size: 10MB
+#      max-request-size: 10MB
 spring:
   mvc:
     view:
       prefix: /views/
       suffix: .jsp
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/sm?serverTimezone=Asia/Seoul
-    username: root
+    url: jdbc:mysql://192.168.34.18:3306/finaldb?serverTimezone=Asia/Seoul
+    username: insung
     password: 1234
   security:
     oauth2:
@@ -47,6 +47,6 @@ logging:
     root: info
     # OpenAI API 관련 로깅 (필요에 따라 조절)
     org.springframework.web.client.RestTemplate: debug
-    sm.ac.controller.ResumeController: debug
+    sm.ac.controller.sm.ac.app.controller.ResumeController: debug
 openai:
   api-key: ${openai.api-key}
