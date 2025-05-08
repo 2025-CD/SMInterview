@@ -1,4 +1,4 @@
-package sm.ac.controller;
+package sm.ac.app.controller;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
