@@ -79,27 +79,27 @@
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
-            <%--            <div class="mb-3">--%>
-            <%--                <label for="confirm-password" class="form-label">Confirm Password</label>--%>
-            <%--                <input type="password" class="form-control" id="confirm-password" name="confirmPassword" required>--%>
-            <%--            </div>--%>
+<%--            <div class="mb-3">--%>
+<%--                <label for="confirm-password" class="form-label">Confirm Password</label>--%>
+<%--                <input type="password" class="form-control" id="confirm-password" name="confirmPassword" required>--%>
+<%--            </div>--%>
 
             <!-- 역할 선택 -->
             <div class="mb-3">
-                <label class="form-label">역할 선택</label><br>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="role" value="1" required> <%-- value 변경 --%>
-                    <label class="form-check-label">멘토</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="role" value="2" required> <%-- value 변경, required는 하나만 있어도 됨 --%>
-                    <label class="form-check-label">멘티</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="role" value="0" required> <%-- value 변경 --%>
-                    <label class="form-check-label">선택 안 함</label>
-                </div>
+            <label class="form-label">역할 선택</label><br>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="role" value="1" required> <%-- value 변경 --%>
+                <label class="form-check-label">멘토</label>
             </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="role" value="2" required> <%-- value 변경, required는 하나만 있어도 됨 --%>
+                <label class="form-check-label">멘티</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="role" value="0" required> <%-- value 변경 --%>
+                <label class="form-check-label">선택 안 함</label>
+            </div>
+        </div>
 
             <!-- 직종 선택 -->
             <div class="mb-3">

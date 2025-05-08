@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sm.ac.app.repository.JobCategoryRepository">
+
+    <!-- 단일 회원 정보 조회 -->
+    <select id="selectOne" parameterType="String" resultType="JobCategoryDto">
+        SELECT *
+        FROM job_categories
+        WHERE id = #{id}
+    </select>
+
+    <!--    &lt;!&ndash; 모든 회원 정보 조회 &ndash;&gt;-->
+    <!--    <select id="select" resultType="UsersDto">-->
+    <!--        SELECT *-->
+    <!--        FROM users-->
+    <!--    </select>-->
+
+    <!--    &lt;!&ndash; 회원 등록 id는 autoincre로 설정해서 따로 안넣음.&ndash;&gt;-->
+    <!--    <insert id="insert" parameterType="UserDto">-->
+    <!--        INSERT INTO users (-->
+    <!--            username, password, email, job_field_id, job_category_id-->
+    <!--        )-->
+    <!--        VALUES (-->
+    <!--                   #{username}, #{password}, #{email}, #{jobFieldId}, #{jobCategoryId}-->
+    <!--               )-->
+    <!--    </insert>-->
+
+    <!--    &lt;!&ndash; 회원 정보 수정 &ndash;&gt;-->
+    <!--    <update id="update" parameterType="edu.sm.app.dto.CustDto">-->
+    <!--        UPDATE cust-->
+    <!--        SET-->
+    <!--            cust_pwd = #{custPwd},-->
+    <!--            cust_name = #{custName},-->
+    <!--            cust_age = #{custAge},-->
+    <!--            cust_phone = #{custPhone},-->
+    <!--            cust_address = #{custAddress}-->
+    <!--        WHERE-->
+    <!--            cust_id = #{custId}-->
+    <!--    </update>-->
+
+    <!--    &lt;!&ndash; 회원 삭제 &ndash;&gt;-->
+    <!--    <delete id="delete" parameterType="String">-->
+    <!--        DELETE FROM cust-->
+    <!--        WHERE cust_id = #{custId}-->
+    <!--    </delete>-->
+
+    <!--    <select id="hasPurchasedPT" resultType="int">-->
+    <!--        SELECT COUNT(*)-->
+    <!--        FROM payment-->
+    <!--        WHERE cust_id = #{custId}-->
+    <!--          AND (product_name LIKE '%필라%' OR product_name LIKE '%피티%' OR product_name LIKE '%PT%')-->
+    <!--          AND payment_status = 'SUCCESS'-->
+
+    <!--    </select>-->
+</mapper>

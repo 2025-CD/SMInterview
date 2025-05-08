@@ -1,122 +1,119 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
+    <meta name="description" content="실시간 면접 연습" />
     <meta name="author" content="" />
-    <title>웹캠 테스트</title>
-    <!-- Favicon -->
+    <title>실시간 면접 연습</title>
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css" />
-    <!-- SimpleLightbox plugin CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/SimpleLightbox/2.1.0/simpleLightbox.min.css" rel="stylesheet" />
-    <!-- Bootstrap CSS -->
     <link href="css/styles.css" rel="stylesheet" />
     <style>
+        .video-container {
+            display: flex;
+            flex-wrap: wrap; /* 화면 작아지면 줄바꿈 */
+            justify-content: space-around; /* 비디오 간 간격 */
+            align-items: flex-start;
+        }
+
+        .video-wrapper {
+            flex: 1; /* 가능한 공간 차지 */
+            min-width: 300px; /* 최소 너비 */
+            max-width: 600px; /* 최대 너비 */
+            margin: 10px;
+            text-align: center;
+        }
+
         video {
             width: 100%;
-            max-width: 600px;
-            border: 5px solid black;
-            border-radius: 10px;
-            transition: border-color 0.3s ease-in-out;
+            border: 3px solid black;
+            border-radius: 8px;
+            background-color: #f0f0f0; /* 비디오 로딩 전 배경색 */
         }
-        #capturedImage {
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-            border: 2px solid blue;
-            display: block;
-            margin-top: 10px;
+
+        #localVideo {
+            /* 내 화면 구분 스타일 (선택적) */
+            border-color: steelblue;
+        }
+
+        #remoteVideo {
+            /* 상대방 화면 구분 스타일 (선택적) */
+            border-color: mediumseagreen;
+        }
+
+        /* 캡처 이미지 스타일 (필요시) */
+        #captureCanvas, #capturedImageLocal, #capturedImageRemote {
+            display: none;
             max-width: 100%;
+            margin-top: 10px;
+            border: 1px solid lightgray;
+        }
+
+        #status {
+            margin-top: 15px;
+            font-weight: bold;
+            min-height: 24px; /* 상태 메시지 영역 높이 확보 */
         }
     </style>
 </head>
+
+<c:choose>
+<c:when test="${empty sessionScope.loginid}">
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light sticky-top py-3" id="mainNav">
-        <div class="container px-4 px-lg-5">
-            <a class="navbar-brand text-dark" href="/#page-top">Mockup</a>
-            <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+<p>실시간 면접 연습을 이용하려면 로그인이 필요합니다. <a href="/login">로그인 페이지로 이동</a></p>
+</body>
+</c:when>
+<c:otherwise>
+    <%-- 로그인 된 사용자에게 보여줄 내용 --%>
+<body data-userid="${sessionScope.loginid.id}">
+<nav class="navbar navbar-expand-lg navbar-light sticky-top py-3" id="mainNav">
+        <%-- 네비게이션 바 내용 --%>
+</nav>
+
+<div class="container mt-4">
+    <h2 class="text-center">실시간 면접 연습</h2>
+    <p class="text-center" id="status">연결 준비 중...</p> <%-- status 요소 --%>
+
+        <%-- ▼▼▼ 이 HTML 코드들이 여기에 있어야 합니다! ▼▼▼ --%>
+    <div class="video-container">
+        <div class="video-wrapper">
+            <h5>내 화면 (Local)</h5>
+            <video id="localVideo" autoplay playsinline muted></video> <%-- localVideo 요소 --%>
+            <button id="muteButton" class="btn btn-secondary mt-2 btn-sm" onclick="toggleMute()">마이크 켜기</button> <%-- muteButton 요소 --%>
+            <button class="btn btn-info mt-2 btn-sm" onclick="captureLocalImage()">내 화면 캡쳐</button>
+            <img id="capturedImageLocal" alt="내 화면 캡쳐"/>
         </div>
-    </nav>
-
-    <div class="container mt-4">
-        <h2 class="text-center">웹캠 테스트</h2>
-        <div class="text-center">
-            <video id="webcam" autoplay playsinline></video>
-            <br>
-
-            <button class="btn btn-danger mt-2" onclick="toggleMute()" id="muteButton">마이크 음소거</button>
-            <button class="btn btn-primary mt-2" onclick="startWebcam()">웹캠 시작</button>
-            <button class="btn btn-success mt-2" onclick="captureImage()">사진 찍기</button>
-            <canvas id="canvas" style="display: none;"></canvas>
-            <img id="capturedImage" style="opacity: 0; display: none;" />
+        <div class="video-wrapper">
+            <h5>상대방 화면 (Remote)</h5>
+            <video id="remoteVideo" autoplay playsinline></video> <%-- remoteVideo 요소 --%>
+            <button class="btn btn-info mt-2 btn-sm" onclick="captureRemoteImage()">상대 화면 캡쳐</button>
+            <img id="capturedImageRemote" alt="상대방 화면 캡쳐"/>
         </div>
     </div>
 
-    <script>
-        let audioTrack;
-        let isMuted = false;
-        let audioContext, analyser, microphone, dataArray;
+    <div class="text-center mt-4">
+            <%-- startConnection 버튼 (querySelector로 찾음) --%>
+        <button class="btn btn-primary" onclick="startConnection()">연결 시작</button>
+            <%-- hangupButton 요소 --%>
+        <button id="hangupButton" class="btn btn-danger" onclick="hangUp()">연결 종료</button>
+    </div>
 
-        async function startWebcam() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                document.getElementById('webcam').srcObject = stream;
-                audioTrack = stream.getAudioTracks()[0];
-                setupAudioProcessing(stream);
-            } catch (error) {
-                alert("웹캠과 마이크를 사용할 수 없습니다: " + error);
-            }
-        }
+    <canvas id="captureCanvas" style="display: none;"></canvas>
+        <%-- ▲▲▲ 여기까지 필수 요소들 ▲▲▲ --%>
 
-        function setupAudioProcessing(stream) {
-            audioContext = new AudioContext();
-            analyser = audioContext.createAnalyser();
-            microphone = audioContext.createMediaStreamSource(stream);
-            microphone.connect(analyser);
-            analyser.fftSize = 256;
-            dataArray = new Uint8Array(analyser.frequencyBinCount);
-            detectAudioLevel();
-        }
+</div> <%-- // container mt-4 --%>
 
-        function detectAudioLevel() {
-            analyser.getByteFrequencyData(dataArray);
-            let volume = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
-            document.getElementById('webcam').style.borderColor = volume > 10 ? 'green' : 'black';
-            requestAnimationFrame(detectAudioLevel);
-        }
+    <%-- 스크립트는 맨 아래에 위치 --%>
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script> <%-- 중복이면 하나 삭제 --%>
+<script src="/webjars/sockjs-client/1.0.2/sockjs.min.js"></script>
+<script src="/webjars/stomp-websocket/2.3.3/stomp.min.js"></script>
+<script src="/js/main.js"></script>
 
-        function captureImage() {
-            const video = document.getElementById('webcam');
-            const canvas = document.getElementById('canvas');
-            const ctx = canvas.getContext('2d');
-
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            const image = document.getElementById('capturedImage');
-            image.src = canvas.toDataURL("image/png");
-            image.style.display = "block";
-            setTimeout(() => image.style.opacity = "1", 100);
-        }
-
-        function toggleMute() {
-            if (audioTrack) {
-                isMuted = !isMuted;
-                audioTrack.enabled = !isMuted;
-                document.getElementById('muteButton').textContent = isMuted ? "마이크 켜기" : "마이크 음소거";
-            }
-        }
-    </script>
 </body>
-</html>
+</c:otherwise>
+</c:choose>
