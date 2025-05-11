@@ -9,7 +9,7 @@ version = '0.0.1-SNAPSHOT'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
@@ -84,6 +84,10 @@ dependencies {
     implementation 'org.webjars:stomp-websocket:2.3.3'
     implementation 'org.webjars:bootstrap:3.3.7'
 
+    //AWS
+    implementation 'software.amazon.awssdk:s3:2.25.15' // 최신 S3 SDK
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
 //    // Spring Security
 //    implementation 'org.springframework.boot:spring-boot-starter-security'
 //
@@ -96,7 +100,9 @@ dependencies {
 //    implementation 'org.springframework.security:spring-security-web'
 //    implementation 'org.springframework.security:spring-security-config'
 }
-
 tasks.named('test') {
     useJUnitPlatform()
+}
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += ["-parameters"]
 }
