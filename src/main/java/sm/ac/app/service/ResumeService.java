@@ -1,4 +1,4 @@
-package sm.ac.service;
+package sm.ac.app.service;
 
 import org.springframework.stereotype.Service;
 
@@ -20,3 +20,5 @@ public class ResumeService {
         return result;
     }
 }
+
+

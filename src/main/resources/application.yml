@@ -5,9 +5,10 @@ spring:
 cloud:
   aws:
     region:
-      static: ap-northeast-2  # 서울 리전
+      static: us-east-1  # 서울 리전
     credentials:
       access-key:
       secret-key:
     s3:
       bucket: cd-spring-s3-uploader
+

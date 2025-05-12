@@ -21,11 +21,10 @@ public class S3UploadService {
     private final S3Client s3Client;
     private final ObjectMapper objectMapper;
 
-    // ✅ 원래 있던 메서드 (userId 포함)
+    // ✅ 사용자 ID가 있는 경우 업로드
     public void uploadAnalysisResult(Map<String, Map<String, String>> analysisResult, String userId) {
         try {
             String json = objectMapper.writeValueAsString(analysisResult);
-
             String key = "resume-analysis/" + userId + "_result_" + System.currentTimeMillis() + ".json";
 
             PutObjectRequest request = PutObjectRequest.builder()
@@ -40,11 +39,10 @@ public class S3UploadService {
         }
     }
 
-    // ✅ 새로 추가된 메서드 (userId 없이 바로 저장)
+    // ✅ 익명 업로드
     public void uploadAnalysisResult(Map<String, Map<String, String>> analysisResult) {
         try {
             String json = objectMapper.writeValueAsString(analysisResult);
-
             String key = "resume-analysis/anonymous_" + System.currentTimeMillis() + ".json";
 
             PutObjectRequest request = PutObjectRequest.builder()
