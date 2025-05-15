@@ -29,3 +29,5 @@ mybatis:
 logging:
   level:
     root: info
+    org.springframework.web.socket.messaging: debug
+    org.springframework.messaging.simp: debug

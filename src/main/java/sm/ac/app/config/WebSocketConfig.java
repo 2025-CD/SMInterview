@@ -7,21 +7,18 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 @Configuration
-@EnableWebSocketMessageBroker // STOMP 기반의 WebSocket 메시지 처리 활성화
+@EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry config) {
-        // 클라이언트에게 메시지를 브로드캐스팅하기 위한 prefix 설정 (/topic으로 시작하는 주소)
-        config.enableSimpleBroker("/topic");
-        // 클라이언트에서 서버로 메시지를 보낼 때 붙는 prefix 설정 (@MessageMapping 메서드 호출)
-        config.setApplicationDestinationPrefixes("/app");
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/signal").withSockJS(); // 클라이언트가 연결할 엔드포인트
     }
 
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // 클라이언트가 WebSocket 연결을 생성할 때 사용할 엔드포인트 설정
-        // "/signal" 엔드포인트로 SockJS를 fallback 옵션으로 활성화 (브라우저 호환성)
-        registry.addEndpoint("/signal").withSockJS();
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        registry.enableSimpleBroker("/user", "/queue"); // /user, /queue 토픽 사용
+//        registry.setApplicationDestinationPrefixes("/app"); // /app으로 시작하는 메시지는 @MessageMapping 메서드로 라우팅
+        //app/match로 서버에 전송하고 있지만  match로 받는 Controller를 찾고있었음...
     }
 }

@@ -98,8 +98,8 @@
             </div>
 
             <div class="text-center mt-4">
-                    <%-- startConnection 버튼 (querySelector로 찾음) --%>
-                <button class="btn btn-primary" onclick="startConnection()">연결 시작</button>
+                    <%-- startConnection 버튼 --%>
+                <button class="btn btn-primary" type="button" onclick="startConnection()">연결 시작</button>
                     <%-- hangupButton 요소 --%>
                 <button id="hangupButton" class="btn btn-danger" onclick="hangUp()">연결 종료</button>
             </div>
@@ -110,61 +110,50 @@
         </div> <%-- // container mt-4 --%>
 
             <%-- 스크립트는 맨 아래에 위치 --%>
-        <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script> <%-- 중복되면 하나 삭제 --%>
-        <script src="/webjars/sockjs-client/1.0.2/sockjs.min.js"></script>
-        <script src="/webjars/stomp-websocket/2.3.3/stomp.min.js"></script>
-<%--        <script src="/js/main.js"></script>--%>
+        <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 
         </body>
     </c:otherwise>
 </c:choose>
 <script>
-
-
     const userId = document.body.dataset.userid;
     const localVideo = document.getElementById('localVideo');
     const remoteVideo = document.getElementById('remoteVideo');
     const muteButton = document.getElementById('muteButton');
     const statusElement = document.getElementById('status');
     const hangupButton = document.getElementById('hangupButton');
-    const startConnectionButton = document.querySelector('button[onclick="startConnection()"]'); // 연결 시작 버튼
+    const startConnectionButton = document.querySelector('button[onclick="startConnection()"]');
 
     let localStream;
     let remoteStream;
     let peerConnection;
     let isMuted = false;
-    let remoteUserId; // 통화 상대방 ID
+    let remoteUserId;
     const configuration = {
         iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
     };
     let stompClient;
     let isWaitingForMatch = false;
     let isConnected = false;
-    let mediaAccessFailed = false; // 미디어 접근 실패 여부 추적
+    let mediaAccessFailed = false;
 
     document.addEventListener('DOMContentLoaded', () => {
         connectWebSocket();
-        getUserMedia(); // getUserMedia 호출은 그대로 두되, 실패해도 매칭은 진행
-        hangupButton.disabled = true; // 초기에는 연결 종료 버튼 비활성화
+        getUserMedia();
+        hangupButton.disabled = true;
+        startConnectionButton.disabled = false; // 초기에는 연결 시작 버튼 활성화
     });
 
     function connectWebSocket() {
         const socket = new SockJS('/signal');
         stompClient = Stomp.over(socket);
-
+        console.log('WebSocket 연결 시도...'); // 추가
         stompClient.connect({}, onConnected, onError);
     }
 
-    function onConnected() {
-        console.log('WebSocket 연결 성공');
-        statusElement.textContent = '대기 중...';
 
-        // 자신에게 오는 시그널링 메시지 구독
-        stompClient.subscribe(`/user/queue/signal-${userId}`, handleSignalingMessage);
-
-        // 매칭 결과를 받기 위한 구독
-        stompClient.subscribe(`/user/queue/match-${userId}`, handleMatchResult);
-    }
 
     function onError(error) {
         console.error('WebSocket 연결 실패:', error);
@@ -174,7 +163,6 @@
     function handleSignalingMessage(payload) {
         const message = JSON.parse(payload.body);
         console.log('받은 시그널링 메시지:', message);
-
         switch (message.type) {
             case 'offer':
                 handleOffer(message);
@@ -192,59 +180,129 @@
     }
 
     function handleMatchResult(payload) {
-        const message = JSON.parse(payload.body);
-        if (message.matched) {
-            remoteUserId = message.otherUserId;
-            statusElement.textContent = `매칭 성공! 상대방 ID: ${remoteUserId}. 장치를 연결하고 연결 시작을 누르세요.`;
-            isWaitingForMatch = false;
-            startConnectionButton.disabled = false; // 다시 활성화하여 WebRTC 연결 시도
-            // hangupButton.disabled = false; // 아직 연결되지 않았으므로 활성화하지 않음
-        } else {
-            statusElement.textContent = '매칭 실패. 다시 시도해주세요.';
-            isWaitingForMatch = false;
-            startConnectionButton.disabled = false;
+        console.log('handleMatchResult 실행됨 - 페이로드:', payload); // 페이로드 전체 로깅
+
+        try {
+            const message = JSON.parse(payload.body);
+            console.log('handleMatchResult 실행됨 - 파싱된 메시지:', message); // 파싱된 메시지 로깅
+
+            if (message.matched) {
+                remoteUserId = message.otherUserId;
+                statusElement.textContent = `매칭 성공! 상대방 ID: ${remoteUserId}. 연결을 시작합니다...`;
+                isWaitingForMatch = false;
+                startConnectionButton.disabled = true; // 매칭 후 연결 시작은 자동으로 진행
+                hangupButton.disabled = false;
+                console.log('매칭 성공:', remoteUserId); // 매칭 성공 및 remoteUserId 로깅
+                startWebRTC(); // 매칭 성공 시 WebRTC 연결 시작
+            } else {
+                statusElement.textContent = '매칭 실패. 다시 시도해주세요.';
+                isWaitingForMatch = false;
+                startConnectionButton.disabled = false;
+                console.log('매칭 실패:', message.message); // 매칭 실패 메시지 로깅
+            }
+        } catch (error) {
+            console.error('handleMatchResult 에러:', error); // 에러 발생 시 로깅
         }
     }
 
     async function getUserMedia() {
-        try {
-            localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            localVideo.srcObject = localStream;
-        } catch (error) {
-            console.error('미디어 장치 접근 오류:', error);
-            statusElement.textContent = '카메라 또는 마이크를 찾을 수 없습니다. 장치 연결 후 다시 시도해주세요.';
-            mediaAccessFailed = true; // 미디어 접근 실패 상태 기록
-            // 오류가 발생해도 매칭은 계속 진행되도록 함
-        }
+        // 웹 카메라와 마이크 없이 매칭 기능만 확인하기 위해 주석 처리 또는 비활성화
+        // try {
+        //     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        //     localVideo.srcObject = localStream;
+        // } catch (error) {
+        //     console.error('미디어 장치 접근 오류:', error);
+        //     statusElement.textContent = '카메라 또는 마이크를 찾을 수 없습니다. 장치 연결 후 다시 시도해주세요.';
+        //     mediaAccessFailed = true;
+        // }
+
+        // 미디어 스트림이 없음을 명시적으로 설정 (WebRTC 관련 기능은 동작하지 않음)
+        localStream = null;
+        mediaAccessFailed = true; // 미디어 접근에 실패한 것으로 간주하여 WebRTC 관련 로직 실행 방지
+        statusElement.textContent = '카메라와 마이크 없이 매칭을 시도합니다.';
     }
 
-    async function startConnection() {
-        if (isWaitingForMatch || isConnected) {
+    async function startConnection() {//"연결시작" 버튼 클릭시 호출
+        console.log('연결 시작 버튼 클릭됨');
+        console.log('stompClient:', stompClient); // 추가
+        if (stompClient) {
+            console.log('stompClient.connected:', stompClient.connected); // 추가
+        }
+        console.log('isWaitingForMatch:', isWaitingForMatch);
+        console.log('isConnected:', isConnected);
+
+        if (isWaitingForMatch || isConnected) { //이미 매칭 요청 중이거나 연결된 상태 면 함수 종료.
+            console.log('이미 매칭 요청 중이거나 연결됨 - 함수 종료');
             return;
         }
-        isWaitingForMatch = true;
-        statusElement.textContent = '연결 대기 중...';
+
+
+        isWaitingForMatch = true; //중복된 매칭 요청 방지
+        statusElement.textContent = '매칭 요청 중...';
         startConnectionButton.disabled = true;
 
-        // 서버에 매칭 요청 전송
-        stompClient.send('/app/match', {}, JSON.stringify({ userId: userId }));
+        console.log('userId:', userId);
+        console.log('stompClient:', stompClient);
+
+        if (stompClient && stompClient.connected) {
+            const matchRequest = JSON.stringify({ userId: userId });
+            console.log('매칭 요청 전송 시도:', '/app/match', matchRequest);
+            stompClient.send('/app/match', {}, matchRequest);
+        } else {
+            console.log('stompClient가 연결되지 않음 - 매칭 요청 전송 안 함');
+        }
+        //app/match라는 STOMP 엔드포인트로 메시지를 전송 ..
+        //메시지 본문에는 현재 사용자의 userId가 JSON형태로 담겨 서버에 매칭 요청을 보낸다.
+
+        // stompClient.send('/app/test', {}, 'Hello Server!');
+    }
+    function onConnected() {
+        console.log('WebSocket 연결 성공');
+        statusElement.textContent = '대기 중...';
+
+        console.log('userId:', userId);
+        const matchTopic = '/user/queue/match-' + userId;
+        console.log('매칭 구독 시도:', matchTopic);
+        console.log('stompClient 객체 (구독 전):', stompClient);
+        console.log('stompClient 연결 상태 (구독 전):', stompClient ? stompClient.connected : 'stompClient is null');
+        if (stompClient && stompClient.connected) {
+            stompClient.subscribe(matchTopic, (payload) => {
+                console.log('매칭 결과 페이로드 수신:', payload);
+                handleMatchResult(payload);
+            }, (error) => {
+                console.error('매칭 구독 오류:', error);
+            });
+        } else {
+            console.error('stompClient가 연결되지 않아 매칭 구독 실패');
+        }
+
+        const signalTopic = '/user/queue/signal-' + userId;
+        console.log('시그널 구독 시도:', signalTopic);
+        console.log('stompClient 객체 (두 번째 구독 전):', stompClient);
+        console.log('stompClient 연결 상태 (두 번째 구독 전):', stompClient ? stompClient.connected : 'stompClient is null');
+        if (stompClient && stompClient.connected) {
+            stompClient.subscribe(signalTopic, handleSignalingMessage, (error) => {
+                console.error('시그널 구독 오류:', error);
+            });
+        } else {
+            console.error('stompClient가 연결되지 않아 시그널 구독 실패');
+        }
+
+        console.log('현재 userId 값:', userId);
+        console.log('시그널 구독 토픽:', signalTopic);
+        console.log('매칭 구독 토픽:', matchTopic);
     }
 
     async function startWebRTC() {
-        if (mediaAccessFailed) {
-            statusElement.textContent = '카메라 또는 마이크 접근 실패로 연결을 시작할 수 없습니다.';
+        if (mediaAccessFailed || !remoteUserId) {
+            statusElement.textContent = '카메라/마이크 오류 또는 상대방 정보 없음.';
             return;
         }
         await createPeerConnection();
         try {
             const offer = await peerConnection.createOffer();
             await peerConnection.setLocalDescription(offer);
-
-            sendMessage({
-                type: 'offer',
-                offer: offer,
-                receiverId: remoteUserId
-            });
+            sendMessage({ type: 'offer', offer: offer, receiverId: remoteUserId });
         } catch (error) {
             console.error('Offer 생성 오류:', error);
             statusElement.textContent = 'Offer 생성 오류';
@@ -254,11 +312,9 @@
 
     async function createPeerConnection() {
         peerConnection = new RTCPeerConnection(configuration);
-
         peerConnection.onicecandidate = handleIceCandidate;
         peerConnection.ontrack = handleRemoteStream;
         peerConnection.oniceconnectionstatechange = handleIceStateChange;
-
         if (localStream) {
             localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
         }
@@ -275,11 +331,7 @@
 
     function handleIceCandidate(event) {
         if (event.candidate && remoteUserId) {
-            sendMessage({
-                type: 'candidate',
-                candidate: event.candidate,
-                receiverId: remoteUserId
-            });
+            sendMessage({ type: 'candidate', candidate: event.candidate, receiverId: remoteUserId });
         }
     }
 
@@ -293,21 +345,15 @@
         if (isConnected) return;
         isConnected = true;
         remoteUserId = message.senderId;
-        statusElement.textContent = `연결됨: ${remoteUserId}`;
+        statusElement.textContent = `상대방과 연결 중...`;
         startConnectionButton.disabled = true;
         hangupButton.disabled = false;
-
         await createPeerConnection();
         try {
             await peerConnection.setRemoteDescription(new RTCSessionDescription(message.offer));
             const answer = await peerConnection.createAnswer();
             await peerConnection.setLocalDescription(answer);
-
-            sendMessage({
-                type: 'answer',
-                answer: answer,
-                receiverId: remoteUserId
-            });
+            sendMessage({ type: 'answer', answer: answer, receiverId: remoteUserId });
         } catch (error) {
             console.error('Answer 생성 오류:', error);
             statusElement.textContent = 'Answer 생성 오류';
@@ -339,13 +385,40 @@
 
     function sendMessage(message) {
         if (stompClient && stompClient.connected && remoteUserId) {
+            message.userId = userId; // 발신자 ID 추가
             stompClient.send(`/app/signal-${remoteUserId}`, {}, JSON.stringify(message));
         }
     }
 
-    function toggleMute() { /* ... */ }
-    function captureLocalImage() { /* ... */ }
-    function captureRemoteImage() { /* ... */ }
+    function toggleMute() {
+        if (localStream) {
+            localStream.getAudioTracks().forEach(track => track.enabled = !track.enabled);
+            muteButton.textContent = isMuted ? '마이크 켜기' : '마이크 끄기';
+            isMuted = !isMuted;
+        }
+    }
+
+    function captureLocalImage() {
+        const canvas = document.getElementById('captureCanvas');
+        canvas.width = localVideo.videoWidth;
+        canvas.height = localVideo.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(localVideo, 0, 0, canvas.width, canvas.height);
+        const imgDataUrl = canvas.toDataURL('image/png');
+        document.getElementById('capturedImageLocal').src = imgDataUrl;
+        document.getElementById('capturedImageLocal').style.display = 'block';
+    }
+
+    function captureRemoteImage() {
+        const canvas = document.getElementById('captureCanvas');
+        canvas.width = remoteVideo.videoWidth;
+        canvas.height = remoteVideo.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(remoteVideo, 0, 0, canvas.width, canvas.height);
+        const imgDataUrl = canvas.toDataURL('image/png');
+        document.getElementById('capturedImageRemote').src = imgDataUrl;
+        document.getElementById('capturedImageRemote').style.display = 'block';
+    }
 
     function hangUp() {
         if (isConnected && peerConnection) {
@@ -376,6 +449,8 @@
         }
     }
 </script>
+
+
 
 
 
