@@ -2,6 +2,8 @@ package sm.ac.app.repository;
 
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 import sm.ac.app.dto.UsersDto;
 import sm.ac.app.frame.InterviewRepository;
@@ -18,7 +20,9 @@ public interface UsersRepository extends InterviewRepository<String, UsersDto> {
 
     List<UsersDto> findByName(String Name);
 
-//    Page<UsersDto> getpage() throws Exception;
+    int countMentorsByJobField(@Param("jobfieldid") int jobfieldid);
+
+
 
 
 }

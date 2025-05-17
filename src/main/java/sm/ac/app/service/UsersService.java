@@ -48,18 +48,13 @@ public class UsersService implements InterviewService<String, UsersDto> {
         return usersRepository.select();
     }
 
-//    public List<CustDto> findByName(String name) throws Exception {
-//        return usersRepository.findByName(name);
-//    }
-//
-//    public Page<CustDto> getPage(int pageNo) throws Exception {
-//        PageHelper.startPage(pageNo,5);
-//        return usersRepository.getpage();
-//    }
-//
-//    public boolean hasPurchasedPT(String custId) {
-//        return usersRepository.hasPurchasedPT(custId) > 0;
-//    }
+    public int getMentorCountByJobField(int jobfieldid) {
+        return usersRepository.countMentorsByJobField(jobfieldid);
+    }
+
+
+
+
 
 
 

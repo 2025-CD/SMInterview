@@ -1,5 +1,49 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" isELIgnored="false" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+    $(function() {
+
+        const targetJobFieldIdStr = '${targetJobFieldId != null ? targetJobFieldId : 0}';
+        console.log("targetJobFieldIdStr =", targetJobFieldIdStr);
+
+        const targetJobFieldId = Number(targetJobFieldIdStr);
+        console.log("targetJobFieldId =", targetJobFieldId);
+
+        if (targetJobFieldId === 0) {
+            $('#mentorCountContainer').html('<p class="fs-5 text-muted">현재 로그인된 사용자 정보가 없습니다.</p>');
+            return;
+        }
+
+        $.ajax({
+            url: '/mentorCount',
+            method: 'GET',
+            data: { jobFieldId: targetJobFieldId },
+            dataType: 'json',
+            success: function(res) {
+                console.log("AJAX raw res object:", res); // 서버에서 받은 원본 객체 확인
+                console.log("jobFieldId 값:", res.jobFieldId, "타입:", typeof res.jobFieldId); // jobFieldId의 값과 타입 확인
+                console.log("mentorCount 값:", res.mentorCount, "타입:", typeof res.mentorCount); // mentorCount의 값과 타입 확인
+
+                if (res && typeof res.mentorCount === 'number' && typeof res.jobFieldId === 'number') {
+                    // --- 이 부분만 변경되었습니다 ---
+                    var htmlContent = '<p class="fs-4 fw-bold text-primary">' +
+                        '현재 같은 직무 분야(ID: ' + res.jobFieldId + ')의 멘토는 ' +
+                        '<span class="text-danger">' + res.mentorCount + '</span>명입니다.' +
+                        '</p>';
+                    $('#mentorCountContainer').html(htmlContent);
+                    // ----------------------------
+                } else {
+                    // 이 메시지가 나온다면, res.jobFieldId 또는 res.mentorCount가 숫자가 아니라는 의미입니다.
+                    $('#mentorCountContainer').html('<p class="fs-5 text-muted">멘토 수 정보를 불러오지 못했습니다.</p>');
+                }
+            }
+        });
+    });
+</script>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -54,15 +98,19 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="/resume/input">이력서 분석</a></li>
-                <li class="nav-item"><a class="nav-link" href="/aiinterview">AI 모의면접</a></li>
-                <li class="nav-item"><a class="nav-link" href="/interview">화상 면접</a></li>
+
                 <c:choose>
-                    <c:when test="${empty sessionScope.user}">
+                    <c:when test="${sessionScope.loginid == null}">
+                        <li class="nav-item"><a class="nav-link" href="/resume/input">이력서 분석</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/aiinterview">AI 모의면접</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/interview">화상 면접</a></li>
                         <li class="nav-item"><a class="nav-link" href="/login">로그인</a></li>
                     </c:when>
                     <c:otherwise>
-                        <li class="nav-item"><span class="nav-link">${sessionScope.nickname}님</span></li>
+                        <li class="nav-item"><a class="nav-link" href="/resume/input">이력서 분석</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/aiinterview">AI 모의면접</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/interview">화상 면접</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/login">${sessionScope.loginid.id}</a></li>
                         <li class="nav-item"><a class="nav-link" href="/logout">로그아웃</a></li>
                     </c:otherwise>
                 </c:choose>
@@ -108,11 +156,20 @@
     </div>
 </section>
 
+<section class="py-5">
+    <div class="container">
+        <h2 class="section-title text-center">당신과 함께할 수 있는 멘토</h2>
+        <div class="text-center mt-4" id="mentorCountContainer">
+            <p class="fs-5 text-muted">멘토 수 정보를 불러오는 중입니다...</p>
+        </div>
+    </div>
+</section>
+
 <section class="footer">
     <div class="container">
         <h5 class="mb-3">Mockup 위치 안내</h5>
         <div class="mb-3">
-            <div id="map" style="height: 300px; width: 100%; border: 1px solid #ccc; border-radius: 8px;"></div>
+            <div id="map2" style="height: 300px; width: 100%; border: 1px solid #ccc; border-radius: 8px;"></div>
         </div>
         <p class="text-muted">© 2025 Mockup Inc. All rights reserved.</p>
     </div>
@@ -120,6 +177,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=YOUR_KAKAO_API_KEY"></script>
+
 <script>
     kakao.maps.load(function () {
         const container = document.getElementById('map');
@@ -134,6 +192,8 @@
             map: map
         });
     });
+
+
 </script>
 </body>
 </html>
