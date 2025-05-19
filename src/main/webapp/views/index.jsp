@@ -54,6 +54,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="/mypage">마이페이지</a></li>
                 <li class="nav-item"><a class="nav-link" href="/resume/input">이력서 분석</a></li>
                 <li class="nav-item"><a class="nav-link" href="/aiinterview">AI 모의면접</a></li>
                 <li class="nav-item"><a class="nav-link" href="/interview">화상 면접</a></li>

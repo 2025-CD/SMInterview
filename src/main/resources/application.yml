@@ -1,6 +1,11 @@
+
 spring:
   profiles:
     active: dev
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
 
 cloud:
   aws:

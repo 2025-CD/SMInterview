@@ -187,8 +187,17 @@ public class ResumeController {
         return null;
     }
 
+
     @GetMapping("/result")
     public String showResumeResult() {
         return "resumeResult";
     }
+
+    @GetMapping("/files")
+    public String showAllResumeFiles(Model model) {
+        List<String> fileList = s3UploadService.listAllResumeAnalysisFiles();
+        model.addAttribute("fileList", fileList);
+        return "resumeFileList";  // => JSP 뷰 이름
+    }
+
 }
