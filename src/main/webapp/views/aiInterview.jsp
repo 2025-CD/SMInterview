@@ -4,7 +4,6 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI 모의 면접</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -26,7 +25,6 @@
         }
         .page-header h1 {
             text-align: center;
-            color: #333;
             margin-bottom: 20px;
         }
         #question-area {
@@ -43,7 +41,6 @@
         }
         .form-label {
             font-weight: bold;
-            color: #555;
         }
         #volume-visual {
             height: 10px;
@@ -58,19 +55,14 @@
             background-color: #28a745;
             transition: width 0.2s ease;
         }
-        .btn-group button {
-            min-width: 110px;
-        }
         .feedback-box {
             background-color: #f9f9f9;
             border-left: 4px solid #ffc107;
             padding: 15px;
             border-radius: 5px;
         }
-        @media (max-width: 768px) {
-            .main-content {
-                width: 95%;
-            }
+        .btn-group button {
+            min-width: 110px;
         }
     </style>
 </head>
@@ -80,22 +72,25 @@
         <h1><i class="fas fa-robot"></i> AI 모의 면접</h1>
     </div>
 
-    <div class="form-group mb-4">
-        <label class="form-label">AI 질문</label>
-        <div id="question-area">AI 질문이 여기에 표시됩니다.</div>
-    </div>
-
     <div class="form-group mb-3">
-        <label class="form-label" for="jobSelect">목표 직무 선택</label>
+        <label class="form-label">목표 직무 선택</label>
         <select id="jobSelect" class="form-select">
-            <option value="">-- 선택하세요 --</option>
+            <option value="">-- 선택해주세요 --</option>
             <option value="소프트웨어 엔지니어 (백엔드)">소프트웨어 엔지니어 (백엔드)</option>
             <option value="소프트웨어 엔지니어 (프론트엔드)">소프트웨어 엔지니어 (프론트엔드)</option>
             <option value="데이터 분석가">데이터 분석가</option>
             <option value="웹 개발자">웹 개발자</option>
-            <option value="마케팅 담당자">마케팅 담당자</option>
+            <option value="마\ucr
+케팅 담당자">마애티담당자</option>
             <option value="기획자">기획자</option>
         </select>
+    </div>
+
+    <div class="form-group mb-3">
+        <label>
+            AI 질문 <span id="question-count" class="text-muted small">(2/5)</span>
+        </label>
+        <div id="question-area" class="form-control" style="min-height: 100px; background-color: #f1f1f1;"></div>
     </div>
 
     <div class="form-group mb-3">
@@ -108,7 +103,9 @@
     </div>
 
     <div class="text-center mb-4">
-        <button id="start-interview" class="btn btn-primary">🎙 면접 시작</button>
+        <button id="start-interview" class="btn btn-primary">🎧 면접 시작</button>
+        <button id="next-question" class="btn btn-outline-primary d-none">➡ 다음 질문</button>
+        <button id="extend-session" class="btn btn-outline-secondary d-none">➕ 더 이어서 하기</button>
     </div>
 
     <div class="btn-group d-flex justify-content-between mb-4">
@@ -118,16 +115,22 @@
     </div>
 
     <div class="feedback-box">
-        <strong>AI 피드백:</strong>
-        <div id="feedback-content">답변에 대한 피드백이 여기에 표시됩니다.</div>
+        <strong>AI 피드벱:</strong>
+        <div id="feedback-content">답변에 대한 피드벱이 여기에 표시됩니다.</div>
+    </div>
+
+    <div class="text-center mt-4">
+        <button id="download-report" class="btn btn-outline-dark">
+            <i class="fas fa-file-pdf"></i> 면접 요약 리포트 다운로드 (PDF)
+        </button>
+        <div id="download-status" class="text-muted mt-2" style="display: none;">파일 생성 중...</div>
     </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    const csrfToken = "${_csrf.token}";
-    const csrfHeader = "${_csrf.headerName}";
-
+    let currentQuestion = 0;
+    let totalQuestions = 5;
 
     const tts = window.speechSynthesis;
     const ttsUtterance = new SpeechSynthesisUtterance();
@@ -137,30 +140,57 @@
         tts.speak(ttsUtterance);
     }
 
+    function updateCounter() {
+        $("#question-count").text(`(${currentQuestion+2}/${totalQuestions+5})`);
+    }
+
+    function requestQuestion() {
+        const job = $("#jobSelect").val();
+        if (!job) {
+            alert("\uc9c1\ubb34\ub97c \uc120\ud0dd\ud574\uc8fc\uc138\uc694.");
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/aiinterview/question",
+            data: { job: job },
+            success: function (question) {
+                $("#question-area").text(question);
+                speak(question);
+                currentQuestion++;
+                updateCounter();
+
+                if (currentQuestion >= totalQuestions) {
+                    $("#next-question").addClass("d-none");
+                    $("#extend-session").removeClass("d-none");
+                } else {
+                    $("#next-question").removeClass("d-none");
+                    $("#extend-session").addClass("d-none");
+                }
+            },
+            error: function () {
+                alert("\uc9c8\ubb38 \uc0dd\uc131 \uc624\ub958 \ubc1c\uc0dd");
+            }
+        });
+    }
+
     $(document).ready(function () {
         $("#start-interview").click(function () {
-            console.log("면접 시작 버튼 클릭됨");
-            const selectedJob = $("#jobSelect").val();
-            if (!selectedJob) {
-                alert("직무를 선택해주세요.");
-                return;
-            }
+            currentQuestion = 0;
+            totalQuestions = 5;
+            updateCounter();
+            requestQuestion();
+            $(this).addClass("d-none");
+        });
 
-            $.ajax({
-                type: "POST",
-                url: "/aiinterview/question",
-                data: { job: selectedJob },
-                // beforeSend: function (xhr) {
-                //     xhr.setRequestHeader(csrfHeader, csrfToken);
-                // },
-                success: function (question) {
-                    $("#question-area").text(question);
-                    speak(question);
-                },
-                error: function () {
-                    alert("질문 생성 오류 발생");
-                }
-            });
+        $("#next-question").click(function () {
+            requestQuestion();
+        });
+
+        $("#extend-session").click(function () {
+            totalQuestions += 5;
+            requestQuestion();
         });
 
         const stt = new webkitSpeechRecognition();
@@ -196,7 +226,7 @@
             const answer = $("#answer-area").val();
             const job = $("#jobSelect").val();
             if (!answer.trim()) {
-                alert("답변 내용을 입력해주세요.");
+                alert("\ub2f5\ubcc0 \ub0b4\uc6a9\uc744 \uc785\ub825\ud574\uc8fc\uc138\uc694.");
                 return;
             }
 
@@ -204,21 +234,16 @@
                 type: "POST",
                 url: "/aiinterview/feedback",
                 data: { answer: answer, job: job },
-                // beforeSend: function (xhr) {
-                //     xhr.setRequestHeader(csrfHeader, csrfToken);
-                // },
                 success: function (feedback) {
                     $("#feedback-content").text(feedback);
                 },
                 error: function () {
-                    $("#feedback-content").text("피드백 생성 오류 발생");
+                    $("#feedback-content").text("\ud53c\ub4dc\ubcb1 \uc0dd\uc131 \uc624\ub958 \ubc1c\uc0dd");
                 }
             });
         });
 
-        // 데시벨 시각화
         let audioContext, analyser, microphone, animationId;
-
         function startVisualizer() {
             navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -226,9 +251,7 @@
                 microphone = audioContext.createMediaStreamSource(stream);
                 microphone.connect(analyser);
                 analyser.fftSize = 256;
-
                 const dataArray = new Uint8Array(analyser.frequencyBinCount);
-
                 function update() {
                     analyser.getByteFrequencyData(dataArray);
                     const volume = dataArray.reduce((a, b) => a + b) / dataArray.length;
@@ -236,10 +259,7 @@
                     $("#volume-bar").css("width", percent + "%");
                     animationId = requestAnimationFrame(update);
                 }
-
                 update();
-            }).catch((err) => {
-                console.error("마이크 접근 실패:", err);
             });
         }
 
@@ -251,9 +271,7 @@
             $("#volume-bar").css("width", "0%");
         }
 
-        // 자동 높이 조절
-        const textarea = document.getElementById("answer-area");
-        textarea.addEventListener("input", function () {
+        document.getElementById("answer-area").addEventListener("input", function () {
             this.style.height = "auto";
             this.style.height = this.scrollHeight + "px";
         });

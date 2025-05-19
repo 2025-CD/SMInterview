@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+
 import java.util.List;
 import java.util.Map;
 
@@ -116,5 +117,7 @@ public class AIInterviewController {
             return "피드백 생성 중 오류: " + e.getMessage();
         }
     }
+
+
 
 }
