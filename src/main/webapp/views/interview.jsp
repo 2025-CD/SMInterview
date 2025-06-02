@@ -295,7 +295,7 @@
     let pcListMap = new Map(); // PeerConnection 객체들을 저장
     let roomId;
     let otherKeyList = []; // 현재 방에 있는 다른 참가자들의 키
-    let localStream = undefined; // 로컬 스트림 (화면 공유 스트림)
+    let localStream = undefined; // 로컬 스트림 (웹캠 스트림으로 사용될 예정)
     let stompClient; // STOMP 클라이언트
 
     // 녹화 관련 변수
@@ -311,10 +311,11 @@
     let audioContext;
     let destinationStream; // 믹싱된 오디오 스트림이 나가는 곳
 
-    /**
-     * 화면 공유 스트림을 가져오는 함수
-     * 사용자의 화면 및 시스템 오디오를 캡처합니다.
-     */
+    // **새로운 전역 변수 추가: 캔버스 및 애니메이션 관련**
+    let canvas;
+    let canvasCtx;
+    let animationFrameId; // requestAnimationFrame ID
+
     /**
      * 웹캠 스트림을 가져오는 함수
      * 사용자의 카메라(웹캠) 및 마이크 오디오를 캡처합니다.
@@ -557,7 +558,7 @@
             onTrack(event, otherKey);
         });
 
-        // 로컬 스트림의 모든 트랙을 PeerConnection에 추가 (화면 공유 스트림)
+        // 로컬 스트림의 모든 트랙을 PeerConnection에 추가 (웹캠 스트림)
         if (localStream) {
             localStream.getTracks().forEach(track => {
                 pc.addTrack(track, localStream);
@@ -609,13 +610,13 @@
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         destinationStream = audioContext.createMediaStreamDestination();
 
-        // 1. 내 로컬 스트림(화면 공유)의 오디오 트랙을 믹싱
+        // 1. 내 로컬 스트림(웹캠)의 오디오 트랙을 믹싱
         if (localStream && localStream.getAudioTracks().length > 0) {
             const localAudioSource = audioContext.createMediaStreamSource(localStream);
             localAudioSource.connect(destinationStream);
-            console.log("Local audio stream (mic/system) added to mix.");
+            console.log("Local audio stream (mic) added to mix.");
         } else {
-            console.warn("No local audio stream available for mixing from getDisplayMedia. (Check browser prompt audio share)");
+            console.warn("No local audio stream available for mixing from getUserMedia. (Check browser mic permissions)");
         }
 
         // 2. 모든 원격 참가자의 오디오 스트림을 믹싱
@@ -714,7 +715,7 @@
         }
         roomId = inputRoomId;
 
-        // 화면 공유 스트림 가져오기 시도
+        // 화면 공유 스트림 가져오기 시도 -> 웹캠 스트림으로 변경
         await startCam();
 
         // 스트림이 성공적으로 가져와졌을 때만 소켓 연결 및 UI 비활성화
@@ -725,7 +726,7 @@
             document.getElementById('chatContainer').style.display = 'flex'; // 채팅창 표시
             alert('방 ' + roomId + '에 참여했습니다. \'스트림 시작\'을 눌러 대화를 시작하세요.'); // 문자열 연결
         } else {
-            console.warn("화면 공유 스트림을 가져오지 못하여 방 참여를 취소합니다.");
+            console.warn("웹캠 스트림을 가져오지 못하여 방 참여를 취소합니다."); // 메시지 수정
         }
     });
 
@@ -735,7 +736,7 @@
             return;
         }
         if (!localStream) {
-            alert("화면 공유 스트림이 활성화되지 않았습니다. '방 참여'를 먼저 눌러주세요.");
+            alert("웹캠 스트림이 활성화되지 않았습니다. '방 참여'를 먼저 눌러주세요."); // 메시지 수정
             return;
         }
 
@@ -765,7 +766,7 @@
     document.querySelector('#startRecordBtn').addEventListener('click', async () => {
         if (!localStream || localStream.getTracks().length === 0) {
             console.warn('Cannot start recording: 로컬 스트림이 활성화되지 않았습니다.');
-            alert("먼저 '방 참여'를 눌러 화면 공유를 시작해주세요.");
+            alert("먼저 '방 참여'를 눌러 웹캠을 시작해주세요."); // 메시지 수정
             return;
         }
 
@@ -774,17 +775,104 @@
         // 1. 모든 오디오 스트림을 믹싱하여 하나의 스트림 생성
         const mixedAudio = mixAudioStreams();
 
-        // 2. 내 화면의 비디오 트랙과 믹싱된 오디오 트랙을 합쳐 최종 녹화 스트림 생성
+        // **2. 비디오 합성을 위한 캔버스 준비**
+        // 캔버스 크기를 모든 비디오를 포함할 수 있도록 적절히 설정
+        // 예: 로컬 비디오 (640x480) + 원격 비디오들 (각 640x480)을 2x2 그리드로 배치
+        const videoWidth = 640; // 각 비디오의 너비 (예시)
+        const videoHeight = 480; // 각 비디오의 높이 (예시)
+
+        // 캔버스 크기 계산 (예: 2x2 그리드, 최대 4명의 참가자를 가정)
+        const canvasWidth = videoWidth * 2;
+        const canvasHeight = videoHeight * 2;
+
+        canvas = document.createElement('canvas');
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+        canvasCtx = canvas.getContext('2d');
+
+        // **디버깅용: 캔버스를 잠시 body에 추가하여 확인 (필요시 주석 해제)**
+        // document.body.appendChild(canvas);
+        // canvas.style.position = 'absolute';
+        // canvas.style.top = '0';
+        // canvas.style.left = '0';
+        // canvas.style.zIndex = '9999';
+        // canvas.style.border = '2px solid red';
+
+
+        // **3. 캔버스에 비디오 스트림을 그리는 함수**
+        const drawVideosOnCanvas = () => {
+            // 캔버스 초기화 (이전 프레임 지우기)
+            canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+            canvasCtx.fillStyle = '#000000'; // 배경색 검정
+            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+            let videoElements = [];
+            // 로컬 비디오 추가
+            if (localStreamElement.srcObject) {
+                videoElements.push(localStreamElement);
+            }
+            // 원격 비디오들 추가
+            remoteStreamMap.forEach((stream, key) => {
+                const remoteVideoEl = document.getElementById('video-' + key);
+                if (remoteVideoEl && remoteVideoEl.srcObject) {
+                    videoElements.push(remoteVideoEl);
+                }
+            });
+
+            // 비디오 개수에 따라 레이아웃 조정 (예시: 1개, 2개, 3-4개)
+            const numVideos = videoElements.length;
+            let x = 0;
+            let y = 0;
+            let currentVideoWidth = videoWidth;
+            let currentVideoHeight = videoHeight;
+
+            // 동적으로 캔버스 레이아웃 조정 (예시)
+            if (numVideos === 1) { // 1개: 중앙에 크게
+                currentVideoWidth = canvasWidth;
+                currentVideoHeight = canvasHeight;
+                x = 0;
+                y = 0;
+                canvasCtx.drawImage(videoElements[0], x, y, currentVideoWidth, currentVideoHeight);
+            } else if (numVideos === 2) { // 2개: 가로로 나란히
+                currentVideoWidth = canvasWidth / 2;
+                currentVideoHeight = canvasHeight;
+                canvasCtx.drawImage(videoElements[0], 0, 0, currentVideoWidth, currentVideoHeight);
+                canvasCtx.drawImage(videoElements[1], currentVideoWidth, 0, currentVideoWidth, currentVideoHeight);
+            } else if (numVideos >= 3) { // 3-4개: 2x2 그리드
+                currentVideoWidth = canvasWidth / 2;
+                currentVideoHeight = canvasHeight / 2;
+                videoElements.forEach((videoEl, index) => {
+                    const col = index % 2;
+                    const row = Math.floor(index / 2);
+                    x = col * currentVideoWidth;
+                    y = row * currentVideoHeight;
+                    canvasCtx.drawImage(videoEl, x, y, currentVideoWidth, currentVideoHeight);
+                });
+            }
+
+
+            animationFrameId = requestAnimationFrame(drawVideosOnCanvas);
+        };
+
+        // **캔버스 캡처 스트림 생성**
+        // 캔버스 프레임 속도는 웹캠 스트림의 프레임 속도에 맞추거나 적절히 설정 (예: 30fps)
+        const canvasStream = canvas.captureStream(30); // 30fps로 캔버스 내용을 비디오 스트림으로 캡처
+
+        // **4. 최종 결합 스트림 생성 (캔버스 비디오 + 믹싱 오디오)**
         const combinedStream = new MediaStream();
-        localStream.getVideoTracks().forEach(track => combinedStream.addTrack(track)); // 화면 비디오 트랙 추가
+        if (canvasStream.getVideoTracks().length > 0) {
+            combinedStream.addTrack(canvasStream.getVideoTracks()[0]); // 캔버스에서 캡처한 비디오 트랙
+            console.log("Canvas video track added to combined stream for recording.");
+        } else {
+            console.warn("No video track from canvas. Recording will be audio only.");
+        }
 
         if (mixedAudio && mixedAudio.getAudioTracks().length > 0) {
             mixedAudio.getAudioTracks().forEach(track => combinedStream.addTrack(track)); // 믹싱된 오디오 트랙 추가
-            console.log("Combined stream created with mixed audio and video for recording.");
-            console.log("Combined stream audio tracks:", combinedStream.getAudioTracks().length);
+            console.log("Mixed audio stream added to combined stream for recording.");
         } else {
-            console.warn("Mixed audio stream is empty. Recording video only (no audio from participants).");
-            alert("음성 없이 화면만 녹화됩니다. 오디오 소스를 확인해주세요 (화면 공유 시 시스템 오디오 선택, 또는 상대방 오디오 스트림 문제).");
+            console.warn("No mixed audio stream. Recording will be video only (no audio from participants).");
+            alert("음성 없이 비디오만 녹화됩니다. 오디오 소스를 확인해주세요 (마이크 권한, 상대방 오디오 스트림 문제).");
         }
 
         // MediaRecorder를 합쳐진 스트림으로 생성
@@ -799,6 +887,19 @@
 
         // 녹화가 중지될 때 호출됩니다. (파일 저장)
         mediaRecorder.onstop = () => {
+            // **animationFrame 루프 중지**
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null; // ID 초기화
+            }
+            // **캔버스 요소 제거 (디버깅용으로 body에 추가했다면)**
+            // if (canvas && canvas.parentNode) {
+            //     canvas.parentNode.removeChild(canvas);
+            //     canvas = null; // 캔버스 참조 초기화
+            //     canvasCtx = null; // 컨텍스트 참조 초기화
+            // }
+
+
             // 수집된 모든 청크를 하나의 Blob으로 결합
             recordedBlob = new Blob(recordedChunks, { type: 'video/webm' });
             const url = URL.createObjectURL(recordedBlob);
@@ -812,8 +913,7 @@
             // **파일 이름에 new Date().toISOString()을 문자열 결합으로 사용**
             // 파일 이름에 부적합한 문자 대체 (:, .)
             const timestamp = new Date().toISOString().replace(/:/g, '-').replace(/\./g, '-');
-            a.download = "recorded-conference-" + timestamp + ".webm"; // 파일 이름 변경 (문자열 연결로 변경)
-
+            a.download = "recorded-interview-" + timestamp + ".webm"; // 파일 이름 변경 (문자열 연결로 변경)
             a.click(); // 다운로드 트리거
 
             // URL 해제 (메모리 누수 방지)
@@ -832,10 +932,23 @@
             // 오류 발생 시에도 버튼 상태 초기화
             document.querySelector('#startRecordBtn').disabled = false;
             document.querySelector('#stopRecordBtn').disabled = true;
+            // **오류 발생 시에도 애니메이션 프레임 중지 및 캔버스 정리**
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            // if (canvas && canvas.parentNode) {
+            //     canvas.parentNode.removeChild(canvas);
+            //     canvas = null;
+            //     canvasCtx = null;
+            // }
         };
 
+        // **녹화 시작 전에 캔버스 그리기 시작**
+        drawVideosOnCanvas();
+
         mediaRecorder.start(); // 녹화 시작
-        console.log('Recording started');
+        console.log('Recording started with combined video and audio.');
         document.querySelector('#startRecordBtn').disabled = true; // 녹화 시작 버튼 비활성화
         document.querySelector('#stopRecordBtn').disabled = false; // 녹화 끝 버튼 활성화
     });
@@ -883,6 +996,18 @@
             destinationStream = null;
             console.log('AudioContext closed.');
         }
+
+        // **캔버스 애니메이션 프레임 중지 및 캔버스 정리 추가**
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+        }
+        if (canvas && canvas.parentNode) {
+            canvas.parentNode.removeChild(canvas);
+            canvas = null;
+            canvasCtx = null;
+        }
+
 
         // UI 상태 초기화
         document.querySelector('#startRecordBtn').disabled = false;
