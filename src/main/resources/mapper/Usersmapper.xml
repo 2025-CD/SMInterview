@@ -27,31 +27,11 @@
                )
     </insert>
 
-<!--    &lt;!&ndash; 회원 정보 수정 &ndash;&gt;-->
-<!--    <update id="update" parameterType="edu.sm.app.dto.CustDto">-->
-<!--        UPDATE cust-->
-<!--        SET-->
-<!--            cust_pwd = #{custPwd},-->
-<!--            cust_name = #{custName},-->
-<!--            cust_age = #{custAge},-->
-<!--            cust_phone = #{custPhone},-->
-<!--            cust_address = #{custAddress}-->
-<!--        WHERE-->
-<!--            cust_id = #{custId}-->
-<!--    </update>-->
+    <select id="countMentorsByJobField" resultType="int" parameterType="int">
+        SELECT COUNT(*)
+        FROM users
+        WHERE role = 1
+          AND job_field_id = #{jobfieldid}
+    </select>
 
-<!--    &lt;!&ndash; 회원 삭제 &ndash;&gt;-->
-<!--    <delete id="delete" parameterType="String">-->
-<!--        DELETE FROM cust-->
-<!--        WHERE cust_id = #{custId}-->
-<!--    </delete>-->
-
-<!--    <select id="hasPurchasedPT" resultType="int">-->
-<!--        SELECT COUNT(*)-->
-<!--        FROM payment-->
-<!--        WHERE cust_id = #{custId}-->
-<!--          AND (product_name LIKE '%필라%' OR product_name LIKE '%피티%' OR product_name LIKE '%PT%')-->
-<!--          AND payment_status = 'SUCCESS'-->
-
-<!--    </select>-->
 </mapper>

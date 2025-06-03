@@ -36,18 +36,40 @@ public class MainController {
     private final JobCategoryService jobCategoryService;
 
 
-    final UsersService userService;
+    private final UsersService userService;
 
 
     @RequestMapping("/")
-    public String main(Model model) {
+    public String main(Model model, HttpSession session) { // HttpSession 매개변수 추가
         log.info("Start Main ,,,,,,");
-        // Database 데이터를 가지고 온다.
+
+        UsersDto currentUser = (UsersDto) session.getAttribute("loginid");
+        log.info("currentUser from session: {}", currentUser);
+
+        if (currentUser != null) {
+            int jobfieldid = currentUser.getJobfieldid();
+            int mentorCount = userService.getMentorCountByJobField(jobfieldid);
+
+            model.addAttribute("currentUser", currentUser);
+            model.addAttribute("targetJobFieldId", jobfieldid);
+            model.addAttribute("mentorCount", mentorCount);
+        }
+
+        // 기존 데이터베이스 데이터 로직
         model.addAttribute("data", "Hello World");
         model.addAttribute("num", 10000);
         return "index";
     }
 
+    @GetMapping("/mentorCount")
+    @ResponseBody
+    public Map<String, Object> getMentorCount(@RequestParam("jobFieldId") int jobFieldId) {
+        int mentorCount = userService.getMentorCountByJobField(jobFieldId);
+        return Map.of(
+                "mentorCount", mentorCount,
+                "jobFieldId", jobFieldId
+        );
+    }
 
     // 회원가입 페이지
     @GetMapping("/register")
@@ -89,19 +111,25 @@ public class MainController {
 
     }
 
-
-//    @GetMapping("/user-info")
-//    public String userInfo(@AuthenticationPrincipal OAuth2User principal) {
-//        if (principal != null) {
-//            // 카카오 사용자 정보 출력
-//            Map<String, Object> attributes = principal.getAttributes();
-//            String email = (String) attributes.get("email");
-//            System.out.println("User email: " + email);
-//        }
-//        return "home"; // 홈 페이지로 이동
+//    // 회원가입 폼 제출 처리 (POST 요청)
+//    @PostMapping("/process-signup")
+//    public String processSignUp(@ModelAttribute UsersDto usersDto,
+//                                RedirectAttributes redirectAttributes,
+//                                Model model) throws Exception { // Model은 오류 시 현재 페이지 반환용
+//
+//        log.info("회원가입 시도: {}", usersDto.getId());
+//
+//
+//        userService.add(usersDto);
+//        log.info("회원가입 성공: {}", usersDto.getId());
+//
+//        // 회원가입 성공 시 리다이렉트와 함께 성공 메시지 전달 (선택 사항)
+//        redirectAttributes.addFlashAttribute("successMessage", "회원가입이 성공적으로 완료되었습니다. 로그인해주세요.");
+//        return "redirect:/login"; // 로그인 페이지로 리다이렉트
+//
+//
 //    }
 
+
+
 }
-
-
-
