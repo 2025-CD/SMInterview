@@ -54,7 +54,8 @@ logging:
     sm.ac.app.controller: debug      # 컨트롤러 로그
     sm.ac.app.service: debug         # 서비스 로그
     jdbc.sqlonly: debug
-    # OpenAI API 관련 로깅 (필요에 따라 조절)
+    org.springframework.web.socket.messaging: debug
+    org.springframework.messaging.simp: debug
     org.springframework.web.client.RestTemplate: debug
 openai:
   api-key: ${openai.api-key}

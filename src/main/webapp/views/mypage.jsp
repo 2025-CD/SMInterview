@@ -74,8 +74,8 @@
 
         <a href="/user" class="btn btn-category">회원수정</a>
         <a href="/files" class="btn btn-category">이력서 분석 결과</a>
-        <a href="/interview/mock" class="btn btn-category">모의면접 내용</a>
-        <a href="/interview/ai" class="btn btn-category">AI 면접 내용</a>
+        <a href="/interview/mock" class="btn btn-category">AI 면접 내용</a>
+        <a href="/interview/ai" class="btn btn-category">화상 면접 내용</a>
     </div>
 </div>
 </body>

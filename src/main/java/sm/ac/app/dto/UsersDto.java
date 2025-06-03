@@ -17,4 +17,5 @@ public class UsersDto {
     private String role;
     private int job_field_id;
     private int job_category_id;
+
 }

@@ -35,6 +35,7 @@ public class LoginController {
         log.info("입력한 ID: {}", id);
         log.info("입력한 Password: {}", password);
 
+
         UsersDto usersDto = usersService.get(id);
         log.info("DB에서 조회된 사용자: {}", usersDto);
 
@@ -51,5 +52,6 @@ public class LoginController {
             return "login";
         }
     }
+
 
 }
