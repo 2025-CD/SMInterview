@@ -67,9 +67,10 @@
 <div class="container d-flex justify-content-center align-items-center vh-100">
     <div class="card p-4 shadow-lg" style="width: 400px;">
         <div class="profile-box">
-            <div class="profile-name">홍길동</div>
-            <div class="profile-id">@hong1234</div>
+            <div class="profile-name">${nickname}</div>
+            <div class="profile-id">@${sessionScope.loginid.id}</div>
         </div>
+
 
         <a href="/user" class="btn btn-category">회원수정</a>
         <a href="/files" class="btn btn-category">이력서 분석 결과</a>

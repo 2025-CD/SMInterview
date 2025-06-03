@@ -5,8 +5,8 @@
 <mapper namespace="sm.ac.app.repository.UsersRepository">
 
     <!-- 로그인을 위한-->
-    <select id="selectOne" parameterType="String" resultType="UsersDto">
-        SELECT *
+    <select id="selectOne" parameterType="String" resultType="sm.ac.app.dto.UsersDto">
+    SELECT *
         FROM users
         WHERE id = #{id}
     </select>

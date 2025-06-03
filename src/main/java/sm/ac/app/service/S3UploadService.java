@@ -30,7 +30,7 @@ public class S3UploadService {
     public void uploadAnalysisResult(Map<String, Map<String, String>> analysisResult, String userId) {
         try {
             String json = objectMapper.writeValueAsString(analysisResult);
-            String key = "resume-analysis/" + userId + "_result_" + System.currentTimeMillis() + ".json";
+            String key = "resume-analysis/" + userId + "/result_" + System.currentTimeMillis() + ".json";
 
             PutObjectRequest request = PutObjectRequest.builder()
                     .bucket(bucket)
@@ -44,22 +44,6 @@ public class S3UploadService {
         }
     }
 
-    public void uploadAnalysisResult(Map<String, Map<String, String>> analysisResult) {
-        try {
-            String json = objectMapper.writeValueAsString(analysisResult);
-            String key = "resume-analysis/anonymous_" + System.currentTimeMillis() + ".json";
-
-            PutObjectRequest request = PutObjectRequest.builder()
-                    .bucket(bucket)
-                    .key(key)
-                    .contentType("application/json")
-                    .build();
-
-            s3Client.putObject(request, RequestBody.fromString(json));
-        } catch (IOException e) {
-            throw new RuntimeException("S3 업로드 중 오류 발생", e);
-        }
-    }
 
     public List<String> listAllResumeAnalysisFiles() {
         String prefix = "resume-analysis/";
@@ -95,9 +79,9 @@ public class S3UploadService {
         }
     }
 
-    // ✅ 새로 추가: S3 파일 목록 + 표시용 날짜 맵 반환
-    public Map<String, String> listResumeFilesWithDisplayNames() {
-        String prefix = "resume-analysis/";
+    // ✅ S3 파일 목록 + 표시용 날짜 맵 반환
+    public Map<String, String> listResumeFilesWithDisplayNames(String userId) {
+        String prefix = "resume-analysis/" + userId + "/";
 
         ListObjectsV2Request request = ListObjectsV2Request.builder()
                 .bucket(bucket)
@@ -125,6 +109,7 @@ public class S3UploadService {
 
         return fileDisplayMap;
     }
+
 
 
     private long extractTimestampFromFilename(String key) {

@@ -15,6 +15,6 @@ public class UsersDto {
     private String password;
     private String email;
     private String role;
-    private int jobfieldid;
-    private int jobcategoryid;
+    private int job_field_id;
+    private int job_category_id;
 }

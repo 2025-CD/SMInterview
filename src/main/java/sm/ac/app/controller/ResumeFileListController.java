@@ -1,15 +1,18 @@
 package sm.ac.app.controller;
 
-import java.util.Map;
+
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import sm.ac.app.dto.UsersDto;
 import sm.ac.service.S3UploadService;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -18,8 +21,16 @@ public class ResumeFileListController {
     private final S3UploadService s3UploadService;
 
     @GetMapping("/files")
-    public String showAllResumeFiles(Model model) {
-        Map<String, String> fileMap = s3UploadService.listResumeFilesWithDisplayNames();
+    public String showUserResumeFiles(HttpSession session, Model model) {
+        UsersDto loginUser = (UsersDto) session.getAttribute("user");
+
+        if (loginUser == null) {
+            model.addAttribute("errorMessage", "로그인이 필요합니다.");
+            return "login";  // 또는 에러 페이지로 이동
+        }
+
+        String userId = loginUser.getId();
+        Map<String, String> fileMap = s3UploadService.listResumeFilesWithDisplayNames(userId);
         model.addAttribute("fileMap", fileMap);
         return "resumeFileList";
     }

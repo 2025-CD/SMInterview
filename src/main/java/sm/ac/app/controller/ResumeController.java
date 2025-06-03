@@ -1,5 +1,6 @@
 package sm.ac.app.controller;
 
+import sm.ac.app.dto.UsersDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -116,10 +117,19 @@ public class ResumeController {
             Map<String, Map<String, String>> analysisResult =
                     (Map<String, Map<String, String>>) session.getAttribute("analysisResult");
 
+            // 사용자 정보에서 userId 추출
+            UsersDto loginUser = (UsersDto) session.getAttribute("user");
+            if (loginUser == null) {
+                redirectAttributes.addFlashAttribute("error", "로그인 정보가 없어 저장할 수 없습니다.");
+                return "redirect:/resume/result";
+            }
+
+            String userId = loginUser.getId();
+
             if (analysisResult == null) {
                 redirectAttributes.addFlashAttribute("error", "분석 결과가 없어 저장할 수 없습니다.");
             } else {
-                s3UploadService.uploadAnalysisResult(analysisResult);
+                s3UploadService.uploadAnalysisResult(analysisResult, userId); // userId 버전 사용
                 redirectAttributes.addFlashAttribute("message", "클라우드 저장 완료!");
             }
         } catch (Exception e) {
@@ -127,6 +137,7 @@ public class ResumeController {
         }
         return "redirect:/resume/result";
     }
+
 
     private Map<String, Object> callOpenAiApi(String resumeContent, String targetJob) throws IOException {
         String apiUrl = "https://api.openai.com/v1/chat/completions";
