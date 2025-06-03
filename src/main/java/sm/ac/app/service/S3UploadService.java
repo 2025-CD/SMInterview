@@ -8,6 +8,7 @@ import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -127,5 +128,55 @@ public class S3UploadService {
         LocalDateTime dateTime = LocalDateTime.ofInstant(instant, ZoneId.of("Asia/Seoul"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return dateTime.format(formatter);
+    }
+    public void uploadInterviewVideo(MultipartFile file, String userId) throws IOException {
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        String key = "interview-recordings/" + userId + "/video_" + timestamp + ".webm";
+
+        PutObjectRequest request = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .contentType("video/webm")
+                .build();
+
+        s3Client.putObject(request, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+    }
+    public Map<String, String> listInterviewVideosWithDisplayNames(String userId) {
+        String prefix = "interview-recordings/" + userId + "/";
+
+        ListObjectsV2Request request = ListObjectsV2Request.builder()
+                .bucket(bucket)
+                .prefix(prefix)
+                .build();
+
+        ListObjectsV2Response response = s3Client.listObjectsV2(request);
+
+        List<S3Object> sorted = response.contents().stream()
+                .filter(obj -> obj.key().endsWith(".webm"))
+                .sorted((a, b) -> Long.compare(b.lastModified().toEpochMilli(), a.lastModified().toEpochMilli()))
+                .toList();
+
+        Map<String, String> fileDisplayMap = new LinkedHashMap<>();
+        for (S3Object obj : sorted) {
+            String key = obj.key();
+            String displayName = key.substring(key.lastIndexOf('/') + 1);
+            fileDisplayMap.put(key, displayName);
+        }
+
+        return fileDisplayMap;
+
+    }
+    public byte[] getFileBytes(String key) {
+        try {
+            GetObjectRequest getRequest = GetObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(key)
+                    .build();
+
+            ResponseInputStream<GetObjectResponse> response = s3Client.getObject(getRequest);
+            return response.readAllBytes();
+        } catch (IOException e) {
+            throw new RuntimeException("S3에서 파일을 읽는 중 오류 발생", e);
+        }
     }
 }

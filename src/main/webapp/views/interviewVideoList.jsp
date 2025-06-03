@@ -4,7 +4,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>이력서 분석 결과</title>
+    <title>인터뷰 영상</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -52,10 +52,10 @@
 <body>
 <div class="container d-flex justify-content-center align-items-center vh-100">
     <div class="card p-4 shadow-lg" style="width: 500px;">
-        <div class="title">이력서 분석 결과 목록</div>
+        <div class="title">인터뷰 영상 목록</div>
 
         <c:forEach var="entry" items="${fileMap}">
-            <a class="file-link" href="/resume/files/view?key=${entry.key}" target="_blank">
+            <a class="file-link" href="/interview/files/view?key=${entry.key}" target="_blank">
                 ${entry.value}
             </a>
         </c:forEach>
