@@ -23,6 +23,11 @@ repositories {
     mavenCentral()
 }
 
+// 이 부분이 가장 중요합니다.
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-parameters"
+}
+
 dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
