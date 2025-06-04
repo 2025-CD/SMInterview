@@ -14,8 +14,8 @@ spring:
       prefix: /views/
       suffix: .jsp
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/sm?serverTimezone=Asia/Seoul
-    username: root
+    url: jdbc:mysql://192.168.34.18:3306/finaldb?serverTimezone=Asia/Seoul
+    username: insung
     password: 1234
 #Mybatis Setting
   security:
@@ -48,6 +48,11 @@ mybatis:
 logging:
   level:
     root: info
+    org.mybatis: debug               # MyBatis 내부 동작
+    sm.ac.app.repository: debug      # Repository (Mapper) 로그
+    sm.ac.app.controller: debug      # 컨트롤러 로그
+    sm.ac.app.service: debug         # 서비스 로그
+    jdbc.sqlonly: debug
     org.springframework.web.socket.messaging: debug
     org.springframework.messaging.simp: debug
     # OpenAI API 관련 로깅 (필요에 따라 조절)
