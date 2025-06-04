@@ -47,7 +47,7 @@ public class MainController {
         log.info("currentUser from session: {}", currentUser);
 
         if (currentUser != null) {
-            int jobfieldid = currentUser.getJob_field_id();
+            int jobfieldid = currentUser.getJobfieldid();
             int mentorCount = userService.getMentorCountByJobField(jobfieldid);
 
             model.addAttribute("currentUser", currentUser);
