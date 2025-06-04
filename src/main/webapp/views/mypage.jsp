@@ -68,7 +68,7 @@
     <div class="card p-4 shadow-lg" style="width: 400px;">
         <div class="profile-box">
             <div class="profile-name">${nickname}</div>
-            <div class="profile-id">@${sessionScope.loginid.id}</div>
+            <div class="profile-id">${sessionScope.loginid.email}</div>
         </div>
 
 

@@ -39,4 +39,12 @@ public class ResumeFileListController {
     public String viewS3JsonFile(@RequestParam("key") String key) {
         return s3UploadService.getJsonFileContent(key);
     }
+
+    @GetMapping("/resume/files/view")
+    public String viewResumeFile(@RequestParam("key") String key, Model model) {
+        String content = s3UploadService.getJsonFileContent(key); // S3에서 JSON 내용 읽기
+        model.addAttribute("jsonContent", content);
+        return "resumeJsonViewer"; // 보여줄 JSP 이름
+    }
+
 }

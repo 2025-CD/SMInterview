@@ -153,19 +153,25 @@ public class S3UploadService {
 
         List<S3Object> sorted = response.contents().stream()
                 .filter(obj -> obj.key().endsWith(".webm"))
-                .sorted((a, b) -> Long.compare(b.lastModified().toEpochMilli(), a.lastModified().toEpochMilli()))
+                .sorted((a, b) -> b.lastModified().compareTo(a.lastModified()))
                 .toList();
 
         Map<String, String> fileDisplayMap = new LinkedHashMap<>();
         for (S3Object obj : sorted) {
             String key = obj.key();
-            String displayName = key.substring(key.lastIndexOf('/') + 1);
-            fileDisplayMap.put(key, displayName);
+            String fileName = key.substring(key.lastIndexOf('/') + 1); // video_타임스탬프.webm
+
+            // 타임스탬프 추출
+            long timestamp = extractTimestampFromFilename(fileName);
+            String displayDate = formatTimestamp(timestamp);
+
+            fileDisplayMap.put(key, displayDate); // 날짜 형식으로 표시
         }
 
         return fileDisplayMap;
-
     }
+
+
     public byte[] getFileBytes(String key) {
         try {
             GetObjectRequest getRequest = GetObjectRequest.builder()

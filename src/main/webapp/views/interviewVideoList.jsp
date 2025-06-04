@@ -55,7 +55,7 @@
         <div class="title">인터뷰 영상 목록</div>
 
         <c:forEach var="entry" items="${fileMap}">
-            <a class="file-link" href="/interview/files/view?key=${entry.key}" target="_blank">
+            <a class="file-link" href="/video/watch?key=${entry.key}">
                 ${entry.value}
             </a>
         </c:forEach>

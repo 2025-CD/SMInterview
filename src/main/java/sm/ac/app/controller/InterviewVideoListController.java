@@ -47,4 +47,11 @@ public class InterviewVideoListController {
         return new ResponseEntity<>(videoData, headers, HttpStatus.OK);
     }
 
+    @GetMapping("/watch")
+    public String watchVideo(@RequestParam("key") String key, Model model) {
+        model.addAttribute("videoKey", key);
+        return "interviewVideoPlayer"; // JSP 파일 이름
+    }
+
+
 }
