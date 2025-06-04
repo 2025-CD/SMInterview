@@ -55,8 +55,6 @@ logging:
     jdbc.sqlonly: debug
     org.springframework.web.socket.messaging: debug
     org.springframework.messaging.simp: debug
-    # OpenAI API 관련 로깅 (필요에 따라 조절)
     org.springframework.web.client.RestTemplate: debug
-    sm.ac.controller.sm.ac.app.controller.ResumeController: debug
 openai:
   api-key: ${openai.api-key}

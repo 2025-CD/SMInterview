@@ -25,31 +25,33 @@ public class LoginController {
         log.info("로그인 페이지 요청");
         return "login"; // login.jsp 반환
     }
-
     @PostMapping("/loginimpl")
     public String loginimpl(Model model,
                             @RequestParam("id") String id,
                             @RequestParam("password") String password,
                             HttpSession session) throws Exception {
 
-        log.info("ID: {}", id);
-        log.info("password: {}", password);
+        log.info("✅ 로그인 시도됨!");
+        log.info("입력한 ID: {}", id);
+        log.info("입력한 Password: {}", password);
+
 
         UsersDto usersDto = usersService.get(id);
+        log.info("DB에서 조회된 사용자: {}", usersDto);
 
-        if (usersDto != null) {
-            // 로그인 성공 조건
-            if (usersDto.getPassword().equals(password)) {
-                session.setAttribute("loginid", usersDto); // ✅ 로그인 성공한 경우에만 저장
-                return "redirect:/"; // ✅ 반드시 redirect!
-            } else {
-                model.addAttribute("loginError", "비밀번호가 일치하지 않습니다.");
-            }
+        if (usersDto != null && usersDto.getPassword().equals(password)) {
+            // ✅ 세션에 유저 정보 저장
+            session.setAttribute("user", usersDto);              // 전체 사용자 객체
+            session.setAttribute("nickname", usersDto.getUsername());  // 별도 닉네임 저장 (JSP에서 사용 편하게)
+
+            log.info("✅ 로그인 성공: {}", usersDto.getUsername());
+            return "redirect:/"; // redirect로 이동해야 세션 반영됨
         } else {
-            model.addAttribute("loginError", "존재하지 않는 아이디입니다.");
+            log.warn("❌ 로그인 실패: 아이디 또는 비밀번호 불일치");
+            model.addAttribute("loginError", "아이디 또는 비밀번호가 올바르지 않습니다.");
+            return "login";
         }
-
-        return "login"; // 실패 시 다시 로그인 페이지로
     }
+
 
 }

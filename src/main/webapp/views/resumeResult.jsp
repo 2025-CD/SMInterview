@@ -77,7 +77,7 @@
             margin-top: 30px;
             text-align: center;
         }
-        .result-actions a {
+        .result-actions a, .result-actions button {
             display: inline-block;
             margin: 0 8px;
             padding: 10px 20px;
@@ -86,16 +86,17 @@
             text-decoration: none;
             color: #fff;
         }
-        .result-actions a:first-child {
+        .result-actions button {
             background-color: #0d6efd;
+            border: none;
         }
-        .result-actions a:first-child:hover {
+        .result-actions button:hover {
             background-color: #0b5ed7;
         }
-        .result-actions a:last-child {
+        .result-actions a {
             background-color: #6c757d;
         }
-        .result-actions a:last-child:hover {
+        .result-actions a:hover {
             background-color: #5a6268;
         }
         @media (max-width: 768px) {
@@ -108,6 +109,14 @@
 </head>
 <body>
 <div class="container main-content">
+    <!-- 메시지 출력 -->
+    <c:if test="${not empty message}">
+        <div class="alert alert-success text-center">${message}</div>
+    </c:if>
+    <c:if test="${not empty error}">
+        <div class="alert alert-danger text-center">${error}</div>
+    </c:if>
+
     <header class="page-header">
         <h1><i class="fas fa-chart-line me-2"></i>AI 이력서 분석 결과</h1>
         <p class="lead page-description">제출하신 이력서에 대한 AI 분석 결과 및 최적화 제안입니다.</p>
@@ -139,6 +148,14 @@
     </section>
 
     <div class="result-actions">
+        <!-- ✅ 클라우드 저장 버튼 -->
+        <form method="post" action="/resume/saveToCloud" style="display:inline;">
+            <button type="submit">
+                <i class="fas fa-cloud-upload-alt me-1"></i> 클라우드 저장
+            </button>
+        </form>
+
+        <!-- 다시 분석 / 홈 -->
         <a href="/resume/input"><i class="fas fa-redo me-1"></i>다시 분석하기</a>
         <a href="/"><i class="fas fa-home me-1"></i>홈으로 돌아가기</a>
     </div>

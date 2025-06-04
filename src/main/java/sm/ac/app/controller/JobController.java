@@ -29,8 +29,8 @@ public class JobController {
     }
 
 //    // 📌 특정 직종의 직군 목록 조회 (job_categories)
-//    @GetMapping("/categories/{fieldId}")
-//    public List<JobCategoryDto> getJobCategories(@PathVariable int fieldId) {
-//        return jobCategoryService.getJobCategoriesByField(fieldId);
-//    }
+    @GetMapping("/categories/{fieldId}")
+    public List<JobCategoryDto> getJobCategories(@PathVariable int fieldId) {
+        return jobCategoryService.getJobCategories(fieldId);
+    }
 }

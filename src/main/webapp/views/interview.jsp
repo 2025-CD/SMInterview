@@ -887,40 +887,47 @@
 
         // 녹화가 중지될 때 호출됩니다. (파일 저장)
         mediaRecorder.onstop = () => {
-            // **animationFrame 루프 중지**
             if (animationFrameId) {
                 cancelAnimationFrame(animationFrameId);
-                animationFrameId = null; // ID 초기화
+                animationFrameId = null;
             }
-            // **캔버스 요소 제거 (디버깅용으로 body에 추가했다면)**
-            // if (canvas && canvas.parentNode) {
-            //     canvas.parentNode.removeChild(canvas);
-            //     canvas = null; // 캔버스 참조 초기화
-            //     canvasCtx = null; // 컨텍스트 참조 초기화
-            // }
 
-
-            // 수집된 모든 청크를 하나의 Blob으로 결합
             recordedBlob = new Blob(recordedChunks, { type: 'video/webm' });
             const url = URL.createObjectURL(recordedBlob);
 
-            // 다운로드를 위한 링크 생성
+            // 👉 S3 업로드용 FormData 생성
+            const formData = new FormData();
+            formData.append("file", recordedBlob);
+
+            // ✅ 서버에 업로드 요청
+            fetch("/interview/save", {
+                method: "POST",
+                body: formData
+            })
+            .then(res => {
+                if (res.ok) {
+                    alert("✅ 녹화가 S3에 업로드되었습니다.");
+                } else {
+                    alert("❌ 업로드 실패. 서버 응답 에러.");
+                }
+            })
+            .catch(err => {
+                alert("❌ 업로드 중 오류 발생: " + err.message);
+            });
+
+            // 🔽 (선택) 다운로드도 같이 진행할 경우 유지
             const a = document.createElement('a');
-            document.body.appendChild(a);
-            a.style = 'display: none'; // 화면에 보이지 않게
+            a.style = 'display: none';
             a.href = url;
-
-            // **파일 이름에 new Date().toISOString()을 문자열 결합으로 사용**
-            // 파일 이름에 부적합한 문자 대체 (:, .)
             const timestamp = new Date().toISOString().replace(/:/g, '-').replace(/\./g, '-');
-            a.download = "recorded-interview-" + timestamp + ".webm"; // 파일 이름 변경 (문자열 연결로 변경)
-            a.click(); // 다운로드 트리거
-
-            // URL 해제 (메모리 누수 방지)
+            a.download = "recorded-interview-" + timestamp + ".webm";
+            document.body.appendChild(a);
+            a.click();
             window.URL.revokeObjectURL(url);
-            alert("녹화가 저장되었습니다: " + a.download); // 문자열 연결로 변경
 
-            // 녹화 상태 초기화 (버튼 활성화/비활성화)
+            alert("📁 녹화가 로컬에도 저장되었습니다: " + a.download);
+
+            // 버튼 초기화
             document.querySelector('#startRecordBtn').disabled = false;
             document.querySelector('#stopRecordBtn').disabled = true;
         };

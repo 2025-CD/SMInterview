@@ -1,3 +1,19 @@
+
 spring:
   profiles:
     active: dev
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+
+cloud:
+  aws:
+    region:
+      static: us-east-1  # 서울 리전
+    credentials:
+      access-key:
+      secret-key:
+    s3:
+      bucket: cd-spring-s3-uploader
+
