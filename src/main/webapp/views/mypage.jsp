@@ -71,10 +71,8 @@
             <div class="profile-id">${sessionScope.loginid.email}</div>
         </div>
 
-
         <a href="/user" class="btn btn-category">회원수정</a>
         <a href="/files" class="btn btn-category">이력서 분석 결과</a>
-        <a href="/interview/mock" class="btn btn-category">AI 면접 내용</a>
         <a href="/video/list" class="btn btn-category">화상 면접 내용</a>
     </div>
 </div>

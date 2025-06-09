@@ -130,17 +130,22 @@ public class S3UploadService {
         return dateTime.format(formatter);
     }
     public void uploadInterviewVideo(MultipartFile file, String userId) throws IOException {
+        if (file == null || file.isEmpty() || file.getSize() == 0) {
+            throw new IllegalArgumentException("업로드된 파일이 비어있습니다.");
+        }
+
         String timestamp = String.valueOf(System.currentTimeMillis());
         String key = "interview-recordings/" + userId + "/video_" + timestamp + ".webm";
 
         PutObjectRequest request = PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
-                .contentType("video/webm")
+                .contentType(file.getContentType()) // 동적으로 설정
                 .build();
 
         s3Client.putObject(request, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
     }
+
     public Map<String, String> listInterviewVideosWithDisplayNames(String userId) {
         String prefix = "interview-recordings/" + userId + "/";
 

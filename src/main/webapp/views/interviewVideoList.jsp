@@ -52,7 +52,7 @@
 <body>
 <div class="container d-flex justify-content-center align-items-center vh-100">
     <div class="card p-4 shadow-lg" style="width: 500px;">
-        <div class="title">인터뷰 영상 목록</div>
+        <div class="title">면접 영상 목록</div>
 
         <c:forEach var="entry" items="${fileMap}">
             <a class="file-link" href="/video/watch?key=${entry.key}">

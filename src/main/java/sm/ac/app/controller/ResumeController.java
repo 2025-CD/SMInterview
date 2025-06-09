@@ -51,61 +51,60 @@ public class ResumeController {
     }
 
     @PostMapping("/result")
-    public String analyzeResumeAndShowResult(@RequestParam("resumeFile") MultipartFile resumeFile,
-                                             @RequestParam(value = "targetJob", required = false) String targetJob,
-                                             Model model,
-                                             HttpSession session) {
-        String resumeContent = "";
-        String fileContentType = null;
+    public String analyzeResumeAndShowResult(
+            @RequestParam(value = "resumeFile", required = false) MultipartFile resumeFile,
+            @RequestParam(value = "resumeText", required = false) String resumeText,
+            @RequestParam(value = "targetJob", required = false) String targetJob,
+            Model model,
+            HttpSession session) {
 
+        String resumeContent = "";
+
+        // 파일 업로드 방식
         if (resumeFile != null && !resumeFile.isEmpty()) {
+            String fileContentType = resumeFile.getContentType();
+            String originalFileName = resumeFile.getOriginalFilename().toLowerCase();
+
             try (InputStream inputStream = resumeFile.getInputStream()) {
-                fileContentType = resumeFile.getContentType();
-                if (fileContentType != null) {
-                    if (fileContentType.startsWith("text/plain")) {
-                        resumeContent = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-                    } else if (fileContentType.equals("application/pdf")) {
-                        byte[] bytes = inputStream.readAllBytes();
-                        PDDocument document = PDDocument.load(bytes);
+                if (fileContentType != null && fileContentType.startsWith("text/plain")) {
+                    resumeContent = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+                } else if (fileContentType != null && fileContentType.equals("application/pdf")) {
+                    try (PDDocument document = PDDocument.load(inputStream)) {
                         PDFTextStripper stripper = new PDFTextStripper();
                         resumeContent = stripper.getText(document);
-                        document.close();
-                    } else if (fileContentType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
-                        XWPFDocument document = new XWPFDocument(inputStream);
-                        XWPFWordExtractor extractor = new XWPFWordExtractor(document);
+                    }
+                } else if ((fileContentType != null && fileContentType.contains("word")) || originalFileName.endsWith(".docx")) {
+                    try (XWPFDocument document = new XWPFDocument(inputStream);
+                         XWPFWordExtractor extractor = new XWPFWordExtractor(document)) {
                         resumeContent = extractor.getText();
-                        extractor.close();
-                        document.close();
-                    } else {
-                        model.addAttribute("errorMessage", "지원하지 않는 파일 형식입니다 (텍스트, PDF, DOCX만 지원).");
-                        return "resumeInput";
                     }
                 } else {
-                    model.addAttribute("errorMessage", "파일 형식을 확인할 수 없습니다.");
+                    model.addAttribute("errorMessage", "지원하지 않는 파일 형식입니다 (TXT, PDF, DOCX만 지원).");
                     return "resumeInput";
                 }
             } catch (IOException e) {
-                e.printStackTrace();
-                model.addAttribute("errorMessage", "파일을 읽는 동안 오류가 발생했습니다.");
+                model.addAttribute("errorMessage", "파일을 읽는 중 오류가 발생했습니다.");
                 return "resumeInput";
             }
-        } else {
-            model.addAttribute("errorMessage", "이력서 파일을 업로드해주세요.");
+        }
+        // 텍스트 직접 입력 방식
+        else if (resumeText != null && !resumeText.trim().isEmpty()) {
+            resumeContent = resumeText.trim();
+        }
+        // 아무 입력도 없을 때
+        else {
+            model.addAttribute("errorMessage", "이력서 파일 또는 텍스트를 입력해주세요.");
             return "resumeInput";
         }
 
-        if (!resumeContent.isEmpty()) {
-            try {
-                Map<String, Object> analysisResult = callOpenAiApi(resumeContent, targetJob);
-                model.addAttribute("analysisResult", analysisResult);
-                session.setAttribute("analysisResult", analysisResult); // ✅ 세션에 저장
-                return "resumeResult";
-            } catch (IOException e) {
-                model.addAttribute("errorMessage", "OpenAI API 응답 처리 오류: " + e.getMessage());
-                return "resumeInput";
-            }
-        } else {
-            model.addAttribute("errorMessage", "추출된 이력서 내용이 없습니다.");
+        // OpenAI 분석 처리
+        try {
+            Map<String, Object> analysisResult = callOpenAiApi(resumeContent, targetJob);
+            model.addAttribute("analysisResult", analysisResult);
+            session.setAttribute("analysisResult", analysisResult);
+            return "resumeResult";
+        } catch (IOException e) {
+            model.addAttribute("errorMessage", "OpenAI API 호출 중 오류 발생: " + e.getMessage());
             return "resumeInput";
         }
     }
@@ -212,4 +211,9 @@ public class ResumeController {
         return "resumeFileList";  // => JSP 뷰 이름
     }
 
+    @PostMapping("/upload")
+    public String handleFileUpload(@RequestParam("file") MultipartFile file) {
+        // 파일 처리 로직
+        return "uploadResult";
+    }
 }
